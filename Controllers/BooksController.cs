@@ -75,5 +75,17 @@ namespace BookShopTest.Controllers
 
         
         }
+
+        [HttpPost]  // Change to POST since we're deleting data
+        public async Task<IActionResult> Delete(int id)
+        {
+            var book = await dbContext.Books.FindAsync(id);
+            if (book is not null)
+            {
+                dbContext.Books.Remove(book);
+                await dbContext.SaveChangesAsync();
+            }
+            return RedirectToAction("List", "Books");
+        }
     }
 }
