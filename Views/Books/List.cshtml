@@ -29,7 +29,7 @@
                 <td>@book.Price</td>
                 <td>@book.Genre</td>
                 <td>
-                    <a>Edit</a>
+                    <a class="btn btn-primary" asp-controller="Books" asp-action="Edit" asp-route-id="@book.Id">Edit</a>
                 </td>
             </tr>
             
