@@ -2,6 +2,7 @@
 using BookShopTest.Models;
 using BookShopTest.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookShopTest.Controllers
 {
@@ -35,6 +36,13 @@ namespace BookShopTest.Controllers
 
             return View();
 
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> List()
+        {
+            var books = await dbContext.Books.ToListAsync();
+            return View(books);
         }
     }
 }
