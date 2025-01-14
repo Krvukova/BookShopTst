@@ -21,6 +21,9 @@ namespace BookShopTest
                     .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddDefaultTokenProviders();
 
+            builder.Services.AddRazorPages();
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -41,6 +44,12 @@ namespace BookShopTest
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
+
+            app.MapRazorPages();
+
+           
 
             app.Run();
         }
