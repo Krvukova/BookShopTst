@@ -1,5 +1,7 @@
 using BookShopTest.Data;
 using Microsoft.EntityFrameworkCore;
+using BookShopTest.Areas.Identity.Data;
+using Microsoft.AspNetCore.Identity;
 
 namespace BookShopTest
 {
@@ -14,6 +16,10 @@ namespace BookShopTest
 
             builder.Services.AddDbContext<ApplicationDbContext>(options => 
             options.UseSqlServer(builder.Configuration.GetConnectionString("BookPortal")));
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+                    .AddEntityFrameworkStores<ApplicationDbContext>()
+                    .AddDefaultTokenProviders();
 
             var app = builder.Build();
 
