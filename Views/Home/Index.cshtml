@@ -6,3 +6,21 @@
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
+<!-- Display the books -->
+<div class="book-list">
+    @foreach (var book in Model)
+    {
+        <div class="book-item">
+            <!-- Display the book's image -->
+            @if (!string.IsNullOrEmpty(book.CoverImageUrl))
+            {
+                <img src="@book.CoverImageUrl" alt="@book.Title" width="150" height="200" />
+            }
+            <h2>@book.Title</h2>
+            <p>@book.Author</p>
+            <p>@book.Price.ToString("C")</p>
+            <a href="@Url.Action("Details", "Books", new { id = book.Id })" class="btn btn-primary">View Details</a>
+        </div>
+    }
+</div>
