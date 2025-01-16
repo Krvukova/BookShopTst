@@ -1,12 +1,14 @@
 ﻿using BookShopTest.Data;
 using BookShopTest.Models;
 using BookShopTest.Models.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.InteropServices;
 
 namespace BookShopTest.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class BooksController : Controller
 
     {
