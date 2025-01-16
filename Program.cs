@@ -7,7 +7,8 @@ namespace BookShopTest
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
+
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -51,7 +52,11 @@ namespace BookShopTest
 
             app.MapRazorPages();
 
-           
+
+            using (var scope = app.Services.CreateScope())
+            {
+                await DbSeeder.SeedRolesAndAdminAsync(scope.ServiceProvider);
+            }
 
             app.Run();
         }

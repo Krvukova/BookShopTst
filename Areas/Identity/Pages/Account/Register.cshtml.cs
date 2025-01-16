@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using BookShopTest.Constants;
 
 namespace BookShopTest.Areas.Identity.Pages.Account
 {
@@ -100,6 +101,7 @@ namespace BookShopTest.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
+                    await _userManager.AddToRoleAsync(user, Roles.Admin.ToString());
                     _logger.LogInformation("User created a new account with password.");
 
                     // Skip email confirmation logic
