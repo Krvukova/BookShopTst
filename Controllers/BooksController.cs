@@ -2,21 +2,25 @@
 using BookShopTest.Models;
 using BookShopTest.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Runtime.InteropServices;
+using Microsoft.AspNetCore.Hosting;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace BookShopTest.Controllers
 {
-    
     public class BooksController : Controller
-
     {
         private readonly ApplicationDbContext dbContext;
+        private readonly IWebHostEnvironment _env;
 
-        public BooksController(ApplicationDbContext dbContext)
+        public BooksController(ApplicationDbContext dbContext, IWebHostEnvironment env)
         {
             this.dbContext = dbContext;
+            _env = env;
         }
 
         [HttpGet]
@@ -52,27 +56,35 @@ namespace BookShopTest.Controllers
 
             return View(book);
         }
+
         [HttpGet]
         public IActionResult Add()
         {
             return View();
         }
+
         [HttpPost]
-        public async Task<IActionResult> Add(AddBookViewModel viewModel)
+        public async Task<IActionResult> Add(Book book, IFormFile coverImage)
         {
-            var book = new Book
+            if (coverImage != null)
             {
-                Title = viewModel.Title,
-                Author = viewModel.Author,
-                Price = viewModel.Price,
-                Genre = viewModel.Genre,
-            };
-            await dbContext.Books.AddAsync(book);
+                // Create a unique filename
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(coverImage.FileName);
+                var filePath = Path.Combine(_env.WebRootPath, "images", fileName);
+
+                // Save the file to the wwwroot/images directory
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await coverImage.CopyToAsync(stream);
+                }
+
+                // Set the CoverImageUrl property to the relative path
+                book.CoverImageUrl = "/images/" + fileName;
+            }
+
+            dbContext.Books.Add(book);
             await dbContext.SaveChangesAsync();
-
-
-            return View();
-
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -87,36 +99,61 @@ namespace BookShopTest.Controllers
         {
             var book = await dbContext.Books.FindAsync(id);
 
+            if (book == null)
+            {
+                return NotFound();
+            }
+
             return View(book);
-
-
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Book viewModel)
+        public async Task<IActionResult> Edit(Book book, IFormFile coverImage)
         {
-            var book = await dbContext.Books.FindAsync(viewModel.Id);
+            var existingBook = await dbContext.Books.FindAsync(book.Id);
 
-            if (book is not null)
+            if (existingBook != null)
             {
-                book.Title = viewModel.Title;
-                book.Author = viewModel.Author;
-                book.Price = viewModel.Price;
-                book.Genre = viewModel.Genre;
+                existingBook.Title = book.Title;
+                existingBook.Author = book.Author;
+                existingBook.Genre = book.Genre;
+                existingBook.Price = book.Price;
+                existingBook.Description = book.Description;
+
+                if (coverImage != null)
+                {
+                    // Delete old image file (optional)
+                    if (!string.IsNullOrEmpty(existingBook.CoverImageUrl))
+                    {
+                        var oldFilePath = Path.Combine(_env.WebRootPath, existingBook.CoverImageUrl.TrimStart('/'));
+                        if (System.IO.File.Exists(oldFilePath))
+                        {
+                            System.IO.File.Delete(oldFilePath);
+                        }
+                    }
+
+                    // Save the new file
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(coverImage.FileName);
+                    var filePath = Path.Combine(_env.WebRootPath, "images", fileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await coverImage.CopyToAsync(stream);
+                    }
+
+                    existingBook.CoverImageUrl = "/images/" + fileName;
+                }
 
                 await dbContext.SaveChangesAsync();
             }
 
-            return RedirectToAction("List", "Books");
-
-        
+            return RedirectToAction("Index");
         }
 
         [HttpPost]  // Change to POST since we're deleting data
         public async Task<IActionResult> Delete(int id)
         {
             var book = await dbContext.Books.FindAsync(id);
-            if (book is not null)
+            if (book != null)
             {
                 dbContext.Books.Remove(book);
                 await dbContext.SaveChangesAsync();

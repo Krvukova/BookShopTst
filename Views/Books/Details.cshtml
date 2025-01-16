@@ -8,6 +8,12 @@
 <p><strong>Author:</strong> @Model.Author</p>
 <p><strong>Genre:</strong> @Model.Genre</p>
 <p><strong>Price:</strong> @Model.Price.ToString("C")</p>
+<p><strong>Description:</strong> @Model.Description</p>
+
+@if (!string.IsNullOrEmpty(Model.CoverImageUrl))
+{
+    <img src="@Model.CoverImageUrl" alt="@Model.Title" class="book-cover" />
+}
 
 <!-- Add to Cart Button -->
 <form method="post" asp-controller="Cart" asp-action="AddToCart">

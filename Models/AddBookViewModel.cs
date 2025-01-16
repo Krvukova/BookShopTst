@@ -9,5 +9,8 @@ namespace BookShopTest.Models
         [Precision(18, 2)]
         public decimal Price { get; set; }
         public string Genre { get; set; }
+        public IFormFile CoverImage { get; set; }
+
+        public string Description { get; set; }
     }
 }
