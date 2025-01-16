@@ -1,0 +1,16 @@
+﻿@model BookShopTest.Models.Entities.Book
+
+@{
+    ViewData["Title"] = "Book Details";
+}
+
+<h1>@Model.Title</h1>
+<p><strong>Author:</strong> @Model.Author</p>
+<p><strong>Genre:</strong> @Model.Genre</p>
+<p><strong>Price:</strong> @Model.Price.ToString("C")</p>
+
+<!-- Add to Cart Button -->
+<form method="post" asp-controller="Cart" asp-action="AddToCart">
+    <input type="hidden" name="bookId" value="@Model.Id" />
+    <button type="submit" class="btn btn-primary">Add to Cart</button>
+</form>

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookShopTest.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250116085406_UpdateeDatabaseSchema")]
-    partial class UpdateeDatabaseSchema
+    [Migration("20250116155757_AddDescriptionToBook")]
+    partial class AddDescriptionToBook
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -107,6 +107,10 @@ namespace BookShopTest.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Author")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

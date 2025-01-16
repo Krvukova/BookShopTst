@@ -1,0 +1,40 @@
+﻿@model IEnumerable<BookShopTest.Models.Entities.Book>
+
+@{
+    ViewData["Title"] = "Book Store";
+}
+
+<h1>Available Books</h1>
+
+<!-- Search and Filter Form -->
+<form method="get" asp-action="Index">
+    <input type="text" name="searchQuery" placeholder="Search by title or author" value="@ViewContext.HttpContext.Request.Query["searchQuery"]" />
+    <select name="genre">
+        <option value="">All Genres</option>
+        <option value="Fiction">Fiction</option>
+        <option value="Non-Fiction">Non-Fiction</option>
+        <!-- Add more genres dynamically if needed -->
+    </select>
+    <button type="submit">Filter</button>
+</form>
+
+<!-- Book Listing -->
+<div class="book-list">
+    @if (Model.Any())
+    {
+        foreach (var book in Model)
+        {
+            <div class="book-item">
+                <h2>@book.Title</h2>
+                <p>Author: @book.Author</p>
+                <p>Genre: @book.Genre</p>
+                <p>Price: @book.Price.ToString("C")</p>
+                <a asp-action="Details" asp-route-id="@book.Id" class="btn btn-info">View Details</a>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No books found.</p>
+    }
+</div>

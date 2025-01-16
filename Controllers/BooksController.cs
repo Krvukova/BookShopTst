@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace BookShopTest.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    
     public class BooksController : Controller
 
     {
@@ -17,6 +17,40 @@ namespace BookShopTest.Controllers
         public BooksController(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
+        }
+
+        [HttpGet]
+        [AllowAnonymous] // Ensure this is accessible to all users
+        public async Task<IActionResult> Index(string searchQuery, string genre)
+        {
+            var books = dbContext.Books.AsQueryable();
+
+            // Filter by search query
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                books = books.Where(b => b.Title.Contains(searchQuery) || b.Author.Contains(searchQuery));
+            }
+
+            // Filter by genre
+            if (!string.IsNullOrEmpty(genre))
+            {
+                books = books.Where(b => b.Genre == genre);
+            }
+
+            return View(await books.ToListAsync());
+        }
+
+        [HttpGet]
+        [AllowAnonymous] // Accessible to all users
+        public async Task<IActionResult> Details(int id)
+        {
+            var book = await dbContext.Books.FindAsync(id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            return View(book);
         }
         [HttpGet]
         public IActionResult Add()
