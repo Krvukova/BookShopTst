@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "User Settings";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div>
+    <ul>
+        <li><a asp-area="Identity" asp-page="/Account/Manage/Index">Profile</a></li>
+        <li><a asp-area="Identity" asp-page="/Account/Manage/ChangePassword">Change Password</a></li>
+        <li><a asp-area="Identity" asp-page="/Account/Manage/TwoFactorAuthentication">Enable 2FA</a></li>
+        <li><a asp-area="Identity" asp-page="/Account/Manage/PersonalData">Personal Data</a></li>
+    </ul>
+</div>
