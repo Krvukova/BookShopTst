@@ -20,6 +20,14 @@
         <p>No image available</p>
     }
 
+    <!-- Display Success Message -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
     <!-- Add to Cart Button -->
     <form asp-action="AddToCart" asp-controller="Books" method="post">
         <input type="hidden" name="bookId" value="@Model.Id" />

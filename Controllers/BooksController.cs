@@ -161,6 +161,7 @@ namespace BookShopTest.Controllers
             return RedirectToAction("List", "Books");
         }
         [HttpPost]
+        [HttpPost]
         public IActionResult AddToCart(int bookId)
         {
             // Retrieve the book from the database by ID
@@ -179,8 +180,12 @@ namespace BookShopTest.Controllers
             // Save the updated cart back to the session
             HttpContext.Session.SetObjectAsJson("Cart", cart);
 
+            // Set a success message in TempData
+            TempData["SuccessMessage"] = "Book has been added to the cart.";
+
             // Redirect back to the details page of the same book
             return RedirectToAction("Details", new { id = bookId });
         }
+
     }
 }
