@@ -26,6 +26,9 @@ namespace BookShopTest
 
             builder.Services.AddRazorPages();
 
+            builder.Services.AddSession();
+
+
 
             var app = builder.Build();
 
@@ -41,6 +44,8 @@ namespace BookShopTest
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseSession();
 
             app.UseAuthorization();
 

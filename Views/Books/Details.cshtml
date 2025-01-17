@@ -4,19 +4,27 @@
     ViewData["Title"] = "Book Details";
 }
 
-<h1>@Model.Title</h1>
-<p><strong>Author:</strong> @Model.Author</p>
-<p><strong>Genre:</strong> @Model.Genre</p>
-<p><strong>Price:</strong> @Model.Price.ToString("C")</p>
-<p><strong>Description:</strong> @Model.Description</p>
+<div class="book-details">
+    <h1>@Model.Title</h1>
+    <p><strong>Author:</strong> @Model.Author</p>
+    <p><strong>Genre:</strong> @Model.Genre</p>
+    <p><strong>Price:</strong> @Model.Price.ToString("C")</p>
+    <p><strong>Description:</strong> @Model.Description</p>
 
-@if (!string.IsNullOrEmpty(Model.CoverImageUrl))
-{
-    <img src="@Model.CoverImageUrl" alt="@Model.Title" class="book-cover" />
-}
+    @if (!string.IsNullOrEmpty(Model.CoverImageUrl))
+    {
+        <img src="@Model.CoverImageUrl" alt="Cover of @Model.Title" width="200" />
+    }
+    else
+    {
+        <p>No image available</p>
+    }
 
-<!-- Add to Cart Button -->
-<form method="post" asp-controller="Cart" asp-action="AddToCart">
-    <input type="hidden" name="bookId" value="@Model.Id" />
-    <button type="submit" class="btn btn-primary">Add to Cart</button>
-</form>
+    <!-- Add to Cart Button -->
+    <form asp-action="AddToCart" asp-controller="Books" method="post">
+        <input type="hidden" name="bookId" value="@Model.Id" />
+        <button type="submit" class="btn btn-primary">
+            Add to Cart
+        </button>
+    </form>
+</div>

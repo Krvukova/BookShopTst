@@ -160,5 +160,27 @@ namespace BookShopTest.Controllers
             }
             return RedirectToAction("List", "Books");
         }
+        [HttpPost]
+        public IActionResult AddToCart(int bookId)
+        {
+            // Retrieve the book from the database by ID
+            var book = dbContext.Books.FirstOrDefault(b => b.Id == bookId);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            // Retrieve the current cart from the session (or create a new one if it doesn't exist)
+            var cart = HttpContext.Session.GetObjectFromJson<List<Book>>("Cart") ?? new List<Book>();
+
+            // Add the selected book to the cart
+            cart.Add(book);
+
+            // Save the updated cart back to the session
+            HttpContext.Session.SetObjectAsJson("Cart", cart);
+
+            // Redirect back to the details page of the same book
+            return RedirectToAction("Details", new { id = bookId });
+        }
     }
 }
