@@ -8,6 +8,9 @@
 
 <h1>Books</h1>
 
+<div class="mb-3">
+    <a href="@Url.Action("Add", "Books")" class="btn btn-success">Add New Book</a>
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -29,7 +32,13 @@
                 <td>@book.Price</td>
                 <td>@book.Genre</td>
                 <td>
-                    <a class="btn btn-primary" asp-controller="Books" asp-action="Edit" asp-route-id="@book.Id">Edit</a>
+                    <!-- Action buttons (Edit, Delete) -->
+                    <a href="@Url.Action("Edit", "Books", new { id = book.Id })" class="btn btn-primary btn-sm">Edit</a>
+
+                    <!-- Delete button -->
+                    <form action="@Url.Action("Delete", "Books", new { id = book.Id })" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
                 </td>
             </tr>
             
