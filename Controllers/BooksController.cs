@@ -162,9 +162,10 @@ namespace BookShopTest.Controllers
         }
         [HttpPost]
         [HttpPost]
+        [HttpPost]
+        [HttpPost]
         public IActionResult AddToCart(int bookId)
         {
-            // Retrieve the book from the database by ID
             var book = dbContext.Books.FirstOrDefault(b => b.Id == bookId);
             if (book == null)
             {
@@ -172,20 +173,30 @@ namespace BookShopTest.Controllers
             }
 
             // Retrieve the current cart from the session (or create a new one if it doesn't exist)
-            var cart = HttpContext.Session.GetObjectFromJson<List<Book>>("Cart") ?? new List<Book>();
+            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
 
-            // Add the selected book to the cart
-            cart.Add(book);
+            // Check if the book is already in the cart
+            var existingCartItem = cart.FirstOrDefault(c => c.Book.Id == bookId);
+            if (existingCartItem != null)
+            {
+                existingCartItem.Quantity++;  // Increase quantity if book is already in the cart
+            }
+            else
+            {
+                // Add the book to the cart with quantity 1
+                cart.Add(new CartItem { Book = book, Quantity = 1 });
+            }
 
             // Save the updated cart back to the session
             HttpContext.Session.SetObjectAsJson("Cart", cart);
 
-            // Set a success message in TempData
-            TempData["SuccessMessage"] = "Book has been added to the cart.";
+            // Set TempData message for success
+            TempData["CartMessage"] = "Book has been added to cart";
 
-            // Redirect back to the details page of the same book
             return RedirectToAction("Details", new { id = bookId });
         }
+
+
 
     }
 }

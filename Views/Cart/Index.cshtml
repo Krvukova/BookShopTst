@@ -1,25 +1,41 @@
-﻿@model IEnumerable<BookShopTest.Models.Entities.Book>
+﻿@model IEnumerable<BookShopTest.Models.CartItem>
 
 <h1>Your Cart</h1>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Price</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var book in Model)
-        {
+<form asp-controller="Cart" asp-action="UpdateCart" method="post">
+    <table class="table">
+        <thead>
             <tr>
-                <td>@book.Title</td>
-                <td>@book.Author</td>
-                <td>@book.Price.ToString("C")</td>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Remove</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Book.Title</td>
+                    <td>@item.Book.Author</td>
+                    <td>@item.Book.Price.ToString("C")</td>
+                    <td>
+                        <input type="number" name="Quantities[@item.Book.Id]" value="@item.Quantity" min="1" />
+                    </td>
+                    <td>
+                        <button type="submit" name="RemoveItem" value="@item.Book.Id" class="btn btn-danger">Remove</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-primary">Update Cart</button>
+</form>
+
+<hr />
+
+<h3>Total Price: @Model.Sum(item => item.Book.Price * item.Quantity).ToString("C")</h3>
 
 <a asp-action="Index" asp-controller="Books" class="btn btn-secondary">Continue Shopping</a>
