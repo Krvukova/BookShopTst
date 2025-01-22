@@ -24,18 +24,16 @@ namespace BookShopTest.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous] // Ensure this is accessible to all users
+        [AllowAnonymous]
         public async Task<IActionResult> Index(string searchQuery, string genre)
         {
             var books = dbContext.Books.AsQueryable();
 
-            // Filter by search query
             if (!string.IsNullOrEmpty(searchQuery))
             {
                 books = books.Where(b => b.Title.Contains(searchQuery) || b.Author.Contains(searchQuery));
             }
 
-            // Filter by genre
             if (!string.IsNullOrEmpty(genre))
             {
                 books = books.Where(b => b.Genre == genre);
@@ -45,7 +43,7 @@ namespace BookShopTest.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous] // Accessible to all users
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int id)
         {
             var book = await dbContext.Books.FindAsync(id);
@@ -68,17 +66,14 @@ namespace BookShopTest.Controllers
         {
             if (coverImage != null)
             {
-                // Create a unique filename
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(coverImage.FileName);
                 var filePath = Path.Combine(_env.WebRootPath, "images", fileName);
 
-                // Save the file to the wwwroot/images directory
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await coverImage.CopyToAsync(stream);
                 }
 
-                // Set the CoverImageUrl property to the relative path
                 book.CoverImageUrl = "/images/" + fileName;
             }
 
@@ -122,7 +117,6 @@ namespace BookShopTest.Controllers
 
                 if (coverImage != null)
                 {
-                    // Delete old image file (optional)
                     if (!string.IsNullOrEmpty(existingBook.CoverImageUrl))
                     {
                         var oldFilePath = Path.Combine(_env.WebRootPath, existingBook.CoverImageUrl.TrimStart('/'));
@@ -132,7 +126,6 @@ namespace BookShopTest.Controllers
                         }
                     }
 
-                    // Save the new file
                     var fileName = Guid.NewGuid().ToString() + Path.GetExtension(coverImage.FileName);
                     var filePath = Path.Combine(_env.WebRootPath, "images", fileName);
                     using (var stream = new FileStream(filePath, FileMode.Create))
@@ -149,7 +142,7 @@ namespace BookShopTest.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpPost]  // Change to POST since we're deleting data
+        [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
             var book = await dbContext.Books.FindAsync(id);
@@ -160,8 +153,7 @@ namespace BookShopTest.Controllers
             }
             return RedirectToAction("List", "Books");
         }
-        [HttpPost]
-        [HttpPost]
+
         [HttpPost]
         [HttpPost]
         public IActionResult AddToCart(int bookId)
@@ -172,31 +164,23 @@ namespace BookShopTest.Controllers
                 return NotFound();
             }
 
-            // Retrieve the current cart from the session (or create a new one if it doesn't exist)
             var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
 
-            // Check if the book is already in the cart
             var existingCartItem = cart.FirstOrDefault(c => c.Book.Id == bookId);
             if (existingCartItem != null)
             {
-                existingCartItem.Quantity++;  // Increase quantity if book is already in the cart
+                existingCartItem.Quantity++;
             }
             else
             {
-                // Add the book to the cart with quantity 1
-                cart.Add(new CartItem { Book = book, Quantity = 1 });
+                cart.Add(new CartItem { Book = book, BookId = book.Id, Quantity = 1 });
             }
 
-            // Save the updated cart back to the session
             HttpContext.Session.SetObjectAsJson("Cart", cart);
 
-            // Set TempData message for success
             TempData["CartMessage"] = "Book has been added to cart";
 
-            return RedirectToAction("Details", new { id = bookId });
+            return RedirectToAction("Index");
         }
-
-
-
     }
 }
