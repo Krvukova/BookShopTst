@@ -1,0 +1,62 @@
+﻿@model BookShopTest.Models.Order
+
+<div>
+    <h4>Order</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Order ID
+        </dt>
+        <dd class="col-sm-10">
+            @Model.OrderId
+        </dd>
+        <dt class="col-sm-2">
+            User ID
+        </dt>
+        <dd class="col-sm-10">
+            @Model.UserId
+        </dd>
+        <dt class="col-sm-2">
+            Order Date
+        </dt>
+        <dd class="col-sm-10">
+            @Model.OrderDate
+        </dd>
+        <dt class="col-sm-2">
+            Total Amount
+        </dt>
+        <dd class="col-sm-10">
+            @Model.TotalAmount
+        </dd>
+        <dt class="col-sm-2">
+            Order Status
+        </dt>
+        <dd class="col-sm-10">
+            @Model.OrderStatus
+        </dd>
+    </dl>
+</div>
+<div>
+    <h4>Order Items</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Book ID</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Total Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.OrderItems)
+            {
+                <tr>
+                    <td>@item.BookId</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.UnitPrice</td>
+                    <td>@item.TotalPrice</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
