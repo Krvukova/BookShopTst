@@ -12,6 +12,7 @@ else
     <table class="table">
         <thead>
             <tr>
+                <th>Image</th
                 <th>Title</th>
                 <th>Author</th>
                 <th>Price</th>
@@ -23,6 +24,9 @@ else
             @foreach (var item in Model)
             {
                 <tr>
+                    <td>
+                        <img src="@item.Book.CoverImageUrl" alt="@item.Book.Title" style="width: 50px; height: auto;">
+                    </td>
                     <td>@item.Book.Title</td>
                     <td>@item.Book.Author</td>
                     <td>@item.Book.Price.ToString("C")</td>
