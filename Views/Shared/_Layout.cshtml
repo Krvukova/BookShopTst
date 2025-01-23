@@ -8,6 +8,30 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BookShopTest.styles.css" asp-append-version="true" />
     <link href="~/css/styles.css" rel="stylesheet" />
+
+
+    <style>
+        .card {
+            min-height: 450px; /* Adjust this value to make the card taller */
+            width:100%;
+
+        }
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+        }
+        .card-img-top {
+            width: 100%;
+            height: auto;
+            max-height: 300px; /* Adjust this value to control the image height */
+            object-fit: contain;
+        }
+        .card-title, .card-text {
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 
 <body>
