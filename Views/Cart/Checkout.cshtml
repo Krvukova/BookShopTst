@@ -3,9 +3,9 @@
 
 <h1>Checkout</h1>
 
-@if (!Model.Any())
+@if (Model == null || !Model.Any())
 {
-    <div class="alert alert-info">Your cart is empty.</div>
+    <p>Your cart is empty.</p>
 }
 else
 {

@@ -155,7 +155,6 @@ namespace BookShopTest.Controllers
         }
 
         [HttpPost]
-        [HttpPost]
         public IActionResult AddToCart(int bookId)
         {
             var book = dbContext.Books.FirstOrDefault(b => b.Id == bookId);
@@ -164,19 +163,26 @@ namespace BookShopTest.Controllers
                 return NotFound();
             }
 
-            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+            var userId = User.Identity.Name; // Assuming you have user authentication in place
+            var existingCartItem = dbContext.CartItems.FirstOrDefault(c => c.BookId == bookId && c.UserId == userId);
 
-            var existingCartItem = cart.FirstOrDefault(c => c.Book.Id == bookId);
             if (existingCartItem != null)
             {
                 existingCartItem.Quantity++;
             }
             else
             {
-                cart.Add(new CartItem { Book = book, BookId = book.Id, Quantity = 1 });
+                var cartItem = new CartItem
+                {
+                    BookId = book.Id,
+                    Quantity = 1,
+                    Price = book.Price,
+                    UserId = userId
+                };
+                dbContext.CartItems.Add(cartItem);
             }
 
-            HttpContext.Session.SetObjectAsJson("Cart", cart);
+            dbContext.SaveChanges();
 
             TempData["CartMessage"] = "Book has been added to cart";
 

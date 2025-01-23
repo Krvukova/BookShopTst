@@ -4,6 +4,7 @@ using BookShopTest.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 public class CartController : Controller
 {
@@ -16,121 +17,112 @@ public class CartController : Controller
 
     public IActionResult Index()
     {
-        var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+        var userId = User.Identity.Name;
+        var cartItems = _context.CartItems.Include(c => c.Book).Where(c => c.UserId == userId).ToList();
 
-        // Calculate total quantity and price for display
-        ViewBag.TotalQuantity = cart.Sum(c => c.Quantity);
-        ViewBag.TotalPrice = cart.Sum(c => c.Quantity * c.Book.Price);
+        ViewBag.TotalQuantity = cartItems.Sum(c => c.Quantity);
+        ViewBag.TotalPrice = cartItems.Sum(c => c.Quantity * c.Book.Price);
 
-        return View(cart);
+        return View(cartItems);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult UpdateCart(Dictionary<int, int> quantities, int? RemoveItem)
     {
-        var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
-
-        if (cart.Count == 0)
-        {
-            TempData["InfoMessage"] = "Your cart is empty.";
-            return RedirectToAction("Index");
-        }
-
-        if (quantities == null || !quantities.Any())
-        {
-            TempData["ErrorMessage"] = "Invalid cart update request.";
-            return RedirectToAction("Index");
-        }
-
-        bool cartUpdated = false;
+        var userId = User.Identity.Name;
+        var cartItems = _context.CartItems.Where(c => c.UserId == userId).ToList();
 
         if (RemoveItem.HasValue)
         {
-            var itemToRemove = cart.FirstOrDefault(c => c.Book.Id == RemoveItem.Value);
+            var itemToRemove = cartItems.FirstOrDefault(c => c.BookId == RemoveItem.Value);
             if (itemToRemove != null)
             {
-                cart.Remove(itemToRemove);
-                cartUpdated = true;
+                _context.CartItems.Remove(itemToRemove);
             }
         }
 
         foreach (var item in quantities)
         {
-            var cartItem = cart.FirstOrDefault(c => c.Book.Id == item.Key);
+            var cartItem = cartItems.FirstOrDefault(c => c.BookId == item.Key);
             if (cartItem != null)
             {
                 cartItem.Quantity = item.Value > 0 ? item.Value : 1;
-                cartUpdated = true;
             }
         }
 
-        HttpContext.Session.SetObjectAsJson("Cart", cart);
+        _context.SaveChanges();
 
-        ViewBag.TotalQuantity = cart.Sum(c => c.Quantity);
-        ViewBag.TotalPrice = cart.Sum(c => c.Quantity * c.Book.Price);
-
-        if (cartUpdated)
-        {
-            TempData["SuccessMessage"] = "Cart updated successfully.";
-        }
-        else
-        {
-            TempData["InfoMessage"] = "No changes were made.";
-        }
+        TempData["SuccessMessage"] = "Cart updated successfully.";
 
         return RedirectToAction("Index");
     }
 
-    // New Checkout action
-    public IActionResult Checkout()
-    {
-        var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
-
-        if (cart.Count == 0)
-        {
-            TempData["ErrorMessage"] = "Your cart is empty.";
-            return RedirectToAction("Index");
-        }
-
-        return View(cart);
-    }
-
-    // New PlaceOrder action
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> PlaceOrder()
+    public IActionResult RemoveItem(int bookId)
     {
-        var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+        var userId = User.Identity.Name;
+        var cartItem = _context.CartItems.FirstOrDefault(c => c.BookId == bookId && c.UserId == userId);
 
-        if (cart.Count == 0)
+        if (cartItem != null)
+        {
+            _context.CartItems.Remove(cartItem);
+            _context.SaveChanges();
+        }
+
+        TempData["SuccessMessage"] = "Item removed from cart.";
+
+        return RedirectToAction("Index");
+    }
+
+    public IActionResult Checkout()
+    {
+        var userId = User.Identity.Name;
+        var cartItems = _context.CartItems.Include(c => c.Book).Where(c => c.UserId == userId).ToList();
+
+        if (cartItems == null || !cartItems.Any())
         {
             TempData["ErrorMessage"] = "Your cart is empty.";
             return RedirectToAction("Index");
         }
 
-        var order = new Order
+        return View(cartItems);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult AddToCart(int bookId)
+    {
+        var book = _context.Books.FirstOrDefault(b => b.Id == bookId);
+        if (book == null)
         {
-            UserId = User.Identity.Name,
-            OrderDate = DateTime.Now,
-            TotalAmount = cart.Sum(c => c.Quantity * c.Book.Price),
-            OrderStatus = "Pending",
-            OrderItems = cart.Select(c => new OrderItem
+            return NotFound();
+        }
+
+        var userId = User.Identity.Name;
+        var existingCartItem = _context.CartItems.FirstOrDefault(c => c.BookId == bookId && c.UserId == userId);
+
+        if (existingCartItem != null)
+        {
+            existingCartItem.Quantity++;
+        }
+        else
+        {
+            var cartItem = new CartItem
             {
-                BookId = c.BookId,
-                Quantity = c.Quantity,
-                UnitPrice = c.Book.Price,
-                TotalPrice = c.Quantity * c.Book.Price
-            }).ToList()
-        };
+                BookId = book.Id,
+                Quantity = 1,
+                Price = book.Price,
+                UserId = userId
+            };
+            _context.CartItems.Add(cartItem);
+        }
 
-        _context.Orders.Add(order);
-        await _context.SaveChangesAsync();
+        _context.SaveChanges();
 
-        // Clear the cart
-        HttpContext.Session.SetObjectAsJson("Cart", new List<CartItem>());
+        TempData["CartMessage"] = "Book has been added to cart";
 
-        TempData["SuccessMessage"] = "Order placed successfully!";
-        return RedirectToAction("Details", "Orders", new { id = order.OrderId });
+        return RedirectToAction("Index");
     }
 }
