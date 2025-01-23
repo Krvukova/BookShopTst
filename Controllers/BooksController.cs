@@ -155,15 +155,22 @@ namespace BookShopTest.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult AddToCart(int bookId)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                TempData["ErrorMessage"] = "User must be logged in to add items to cart.";
+                return Redirect("/Identity/Account/Login");
+            }
+
             var book = dbContext.Books.FirstOrDefault(b => b.Id == bookId);
             if (book == null)
             {
                 return NotFound();
             }
 
-            var userId = User.Identity.Name; // Assuming you have user authentication in place
+            var userId = User.Identity.Name;
             var existingCartItem = dbContext.CartItems.FirstOrDefault(c => c.BookId == bookId && c.UserId == userId);
 
             if (existingCartItem != null)

@@ -44,7 +44,13 @@ namespace BookShopTest
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages(); // This is important for Identity routes
+            });
             app.UseSession();
 
             app.UseAuthorization();
