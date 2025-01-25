@@ -50,7 +50,7 @@ else
 
             <button type="submit" class="btn btn-primary">Update Cart</button>
         </form>
-
+        <br/>
         <form asp-controller="Cart" asp-action="Checkout" method="post">
         @Html.AntiForgeryToken()
             <button type="submit" class="btn btn-success">Proceed to Checkout</button>

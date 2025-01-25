@@ -38,7 +38,10 @@
         <input asp-for="PhoneNumber" class="form-control" />
         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
     </div>
-    <br/>
+    <div class="form-group">
+        <label>Total Price:</label>
+        <p>@ViewBag.TotalPrice.ToString("C")</p>
+    </div>
     <button type="submit" class="btn btn-primary">Complete Order</button>
 </form>
 

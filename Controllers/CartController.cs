@@ -130,14 +130,20 @@ namespace BookShopTest.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpPost]
+        [HttpPost("PlaceOrder")]
         [ValidateAntiForgeryToken]
         public IActionResult PlaceOrder()
         {
+            var userId = User.Identity.Name;
+            var cartItems = dbContext.CartItems.Include(c => c.Book).Where(c => c.UserId == userId).ToList();
+            var totalPrice = cartItems.Sum(c => c.Quantity * c.Book.Price);
+
+            ViewBag.TotalPrice = totalPrice;
+
             return View("ShippingInfo");
         }
 
-        [HttpPost]
+        [HttpPost("CompleteOrder")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CompleteOrder(ShippingInfo shippingInfo)
         {
@@ -155,10 +161,11 @@ namespace BookShopTest.Controllers
                 return RedirectToAction("OrderConfirmation");
             }
 
+            ViewBag.TotalPrice = dbContext.CartItems.Include(c => c.Book).Where(c => c.UserId == User.Identity.Name).Sum(c => c.Quantity * c.Book.Price);
             return View("ShippingInfo", shippingInfo);
         }
 
-        [HttpGet]
+        [HttpGet("OrderConfirmation")]
         public IActionResult OrderConfirmation()
         {
             return View();
