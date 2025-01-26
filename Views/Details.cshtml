@@ -1,62 +1,124 @@
-﻿@model BookShopTest.Models.Order
+﻿@model BookShopTest.Models.Entities.Book
 
-<div>
-    <h4>Order</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            Order ID
-        </dt>
-        <dd class="col-sm-10">
-            @Model.OrderId
-        </dd>
-        <dt class="col-sm-2">
-            User ID
-        </dt>
-        <dd class="col-sm-10">
-            @Model.UserId
-        </dd>
-        <dt class="col-sm-2">
-            Order Date
-        </dt>
-        <dd class="col-sm-10">
-            @Model.OrderDate
-        </dd>
-        <dt class="col-sm-2">
-            Total Amount
-        </dt>
-        <dd class="col-sm-10">
-            @Model.TotalAmount
-        </dd>
-        <dt class="col-sm-2">
-            Order Status
-        </dt>
-        <dd class="col-sm-10">
-            @Model.OrderStatus
-        </dd>
-    </dl>
-</div>
-<div>
-    <h4>Order Items</h4>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Book ID</th>
-                <th>Quantity</th>
-                <th>Unit Price</th>
-                <th>Total Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.OrderItems)
+@{
+    ViewData["Title"] = "Book Details";
+}
+
+<div class="book-details">
+    <div class="details-container">
+        @if (!string.IsNullOrEmpty(Model.CoverImageUrl))
+        {
+            <img src="@Model.CoverImageUrl" alt="Cover of @Model.Title" class="book-cover" />
+        }
+        else
+        {
+            <p>No image available</p>
+        }
+        <div class="book-info">
+            <h1>@Model.Title</h1>
+            <p><strong>Author:</strong> @Model.Author</p>
+            <p><strong>Genre:</strong> @Model.Genre</p>
+            <p><strong>Description:</strong> @Model.Description</p>
+            <p><strong>Price:</strong> @Model.Price.ToString("C")</p>
+            <p><strong>Available Quantity:</strong> @Model.Quantity</p>
+
+            @if (TempData["ErrorMessage"] != null)
             {
-                <tr>
-                    <td>@item.BookId</td>
-                    <td>@item.Quantity</td>
-                    <td>@item.UnitPrice</td>
-                    <td>@item.TotalPrice</td>
-                </tr>
+                <div class="alert alert-danger">
+                    @TempData["ErrorMessage"]
+                </div>
             }
-        </tbody>
-    </table>
+
+            @if (Model.Quantity == 0)
+            {
+                <p class="text-danger out-of-stock">Out of Stock</p>
+            }
+            else
+            {
+                <form asp-action="AddToCart" method="post">
+                    <input type="hidden" name="bookId" value="@Model.Id" />
+                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                </form>
+            }
+
+            @if (TempData["CartMessage"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["CartMessage"]
+                </div>
+            }
+
+            <a href="@Url.Action("Index", "Cart")" class="btn btn-secondary mt-3">Go to Cart</a>
+            <a href="@Url.Action("Index", "Books")" class="btn btn-secondary mt-3">Go Back</a>
+
+            <h3>Reviews</h3>
+            @if (Model.Reviews != null && Model.Reviews.Any())
+            {
+                <p>Average Rating: @Model.Reviews.Average(r => r.Rating)</p>
+                <ul>
+                    @foreach (var review in Model.Reviews)
+                    {
+                        <li>
+                            <strong>@review.User.UserName</strong> (@review.Rating/5): @review.Comment
+                            <br />
+                            <small>@review.DatePosted.ToShortDateString()</small>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>No reviews yet.</p>
+            }
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                <h4>Leave a Review</h4>
+                <form asp-action="AddReview" method="post">
+                    <input type="hidden" name="bookId" value="@Model.Id" />
+                    <div class="form-group">
+                        <label for="Rating">Rating</label>
+                        <select name="Rating" class="form-control">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="Comment">Comment</label>
+                        <textarea name="Comment" class="form-control"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                </form>
+            }
+            else
+            {
+                <p>Please <a href="/Identity/Account/Login">log in</a> to leave a review.</p>
+            }
+        </div>
+    </div>
 </div>
+
+<style>
+    .details-container {
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .book-cover {
+        width: 300px; /* Increase the width to make the image larger */
+        height: auto;
+        margin-right: 20px;
+    }
+
+    .book-info {
+        flex: 1;
+    }
+
+    .out-of-stock {
+        font-size: 1.5em; /* Increase the font size */
+        font-weight: bold; /* Make the text bold */
+    }
+</style>

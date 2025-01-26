@@ -13,6 +13,8 @@ namespace BookShopTest.Models.Entities
         public string CoverImageUrl { get; set; }
         public string Description { get; set; }
         public int Quantity { get; set; }
-        public DateTime DateAdded { get; set; } // Add this line if you have a date field
+        public DateTime DateAdded { get; set; }
+
+        public virtual ICollection<Review> Reviews { get; set; } // Add this line
     }
 }

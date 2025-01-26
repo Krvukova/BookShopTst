@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Hosting;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using BookShopTest.Areas.Identity.Data;
 
 namespace BookShopTest.Controllers
 {
@@ -16,11 +18,15 @@ namespace BookShopTest.Controllers
     {
         private readonly ApplicationDbContext dbContext;
         private readonly IWebHostEnvironment _env;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public BooksController(ApplicationDbContext dbContext, IWebHostEnvironment env)
+
+        public BooksController(ApplicationDbContext dbContext, IWebHostEnvironment env, UserManager<ApplicationUser> userManager)
         {
             this.dbContext = dbContext;
             _env = env;
+            this.userManager = userManager;
+
         }
 
         [HttpGet]
@@ -65,7 +71,11 @@ namespace BookShopTest.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Details(int id)
         {
-            var book = await dbContext.Books.FindAsync(id);
+            var book = await dbContext.Books
+                .Include(b => b.Reviews)
+                .ThenInclude(r => r.User)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
             if (book == null)
             {
                 return NotFound();
@@ -73,14 +83,45 @@ namespace BookShopTest.Controllers
 
             return View(book);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddReview(int bookId, int rating, string comment)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                TempData["ErrorMessage"] = "User must be logged in to leave a review.";
+                return RedirectToAction("Details", new { id = bookId });
+            }
 
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "User not found.";
+                return RedirectToAction("Details", new { id = bookId });
+            }
+
+            var review = new Review
+            {
+                BookId = bookId,
+                UserId = user.Id, // Set the UserId to the current user's ID
+                Rating = rating,
+                Comment = comment,
+                DatePosted = DateTime.Now
+            };
+
+            dbContext.Reviews.Add(review);
+            await dbContext.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Review added successfully.";
+            return RedirectToAction("Details", new { id = bookId });
+        }
         [HttpGet]
         public IActionResult Add()
         {
             return View();
         }
 
-        [HttpPost]
+       
         [HttpPost]
         public async Task<IActionResult> Add(Book book, IFormFile coverImage)
         {
