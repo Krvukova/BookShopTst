@@ -183,7 +183,7 @@ namespace BookShopTest.Controllers
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Not enough stock available.";
+                    TempData["ErrorMessage"] = $"Only {book.Quantity} copies of {book.Title} are available for purchase.";
                     return RedirectToAction("Details", new { id = bookId });
                 }
             }
@@ -203,7 +203,7 @@ namespace BookShopTest.Controllers
 
             TempData["CartMessage"] = "Book has been added to cart";
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Details", new { id = bookId });
         }
     }
 }

@@ -35,7 +35,7 @@ namespace BookShopTest.Controllers
         public IActionResult UpdateCart(Dictionary<int, int> quantities, int? RemoveItem)
         {
             var userId = User.Identity.Name;
-            var cartItems = dbContext.CartItems.Where(c => c.UserId == userId).ToList();
+            var cartItems = dbContext.CartItems.Include(c => c.Book).Where(c => c.UserId == userId).ToList();
 
             if (RemoveItem.HasValue)
             {
@@ -51,7 +51,16 @@ namespace BookShopTest.Controllers
                 var cartItem = cartItems.FirstOrDefault(c => c.BookId == item.Key);
                 if (cartItem != null)
                 {
-                    cartItem.Quantity = item.Value > 0 ? item.Value : 1;
+                    var book = dbContext.Books.FirstOrDefault(b => b.Id == cartItem.BookId);
+                    if (book != null)
+                    {
+                        if (item.Value > book.Quantity)
+                        {
+                            TempData["ErrorMessage"] = $"Only {book.Quantity} copies of {book.Title} are available for purchase.";
+                            return RedirectToAction("Index");
+                        }
+                        cartItem.Quantity = item.Value > 0 ? item.Value : 1;
+                    }
                 }
             }
 
