@@ -4,10 +4,16 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<h2>Books</h2>
+
+<p>
+    Sort by:
+    <a asp-action="Index" asp-route-sortOrder="price_asc">Price: Low to High</a> |
+    <a asp-action="Index" asp-route-sortOrder="price_desc">Price: High to Low</a> |
+    <a asp-action="Index" asp-route-sortOrder="date_asc">Oldest</a> |
+    <a asp-action="Index" asp-route-sortOrder="date_desc">Newest</a>
+</p>
+
 
 <!-- Display TempData message -->
 @if (TempData["CartMessage"] != null)

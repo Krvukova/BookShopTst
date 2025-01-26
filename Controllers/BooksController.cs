@@ -25,7 +25,7 @@ namespace BookShopTest.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> Index(string searchQuery, string genre)
+        public async Task<IActionResult> Index(string searchQuery, string genre, string sortOrder)
         {
             var books = dbContext.Books.AsQueryable();
 
@@ -37,6 +37,25 @@ namespace BookShopTest.Controllers
             if (!string.IsNullOrEmpty(genre))
             {
                 books = books.Where(b => b.Genre == genre);
+            }
+
+            switch (sortOrder)
+            {
+                case "price_asc":
+                    books = books.OrderBy(b => b.Price);
+                    break;
+                case "price_desc":
+                    books = books.OrderByDescending(b => b.Price);
+                    break;
+                case "date_asc":
+                    books = books.OrderBy(b => b.DateAdded);
+                    break;
+                case "date_desc":
+                    books = books.OrderByDescending(b => b.DateAdded);
+                    break;
+                default:
+                    books = books.OrderBy(b => b.Title); // Default sorting by title
+                    break;
             }
 
             return View(await books.ToListAsync());
@@ -62,6 +81,7 @@ namespace BookShopTest.Controllers
         }
 
         [HttpPost]
+        [HttpPost]
         public async Task<IActionResult> Add(Book book, IFormFile coverImage)
         {
             if (coverImage != null)
@@ -76,6 +96,8 @@ namespace BookShopTest.Controllers
 
                 book.CoverImageUrl = "/images/" + fileName;
             }
+
+            book.DateAdded = DateTime.Now; // Set the DateAdded field
 
             dbContext.Books.Add(book);
             await dbContext.SaveChangesAsync();
