@@ -140,7 +140,7 @@ namespace BookShopTest.Controllers
                 await dbContext.SaveChangesAsync();
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("List");
         }
 
         [HttpPost]
