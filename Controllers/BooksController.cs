@@ -166,9 +166,10 @@ namespace BookShopTest.Controllers
             }
 
             var book = dbContext.Books.FirstOrDefault(b => b.Id == bookId);
-            if (book == null)
+            if (book == null || book.Quantity == 0)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = "This book is out of stock.";
+                return RedirectToAction("Details", new { id = bookId });
             }
 
             var userId = User.Identity.Name;
@@ -176,7 +177,15 @@ namespace BookShopTest.Controllers
 
             if (existingCartItem != null)
             {
-                existingCartItem.Quantity++;
+                if (existingCartItem.Quantity < book.Quantity)
+                {
+                    existingCartItem.Quantity++;
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Not enough stock available.";
+                    return RedirectToAction("Details", new { id = bookId });
+                }
             }
             else
             {

@@ -143,6 +143,11 @@ namespace BookShopTest.Controllers
                 var book = await dbContext.Books.FindAsync(item.BookId);
                 if (book != null)
                 {
+                    if (book.Quantity < item.Quantity)
+                    {
+                        TempData["ErrorMessage"] = $"Not enough stock for {book.Title}. Available: {book.Quantity}";
+                        return RedirectToAction("Index");
+                    }
                     book.Quantity -= item.Quantity;
                     dbContext.Books.Update(book);
                 }

@@ -5,7 +5,6 @@
 }
 
 <div class="book-details">
-    
     <div class="details-container">
         @if (!string.IsNullOrEmpty(Model.CoverImageUrl))
         {
@@ -21,6 +20,20 @@
             <p><strong>Genre:</strong> @Model.Genre</p>
             <p><strong>Description:</strong> @Model.Description</p>
             <p><strong>Price:</strong> @Model.Price.ToString("C")</p>
+            <p><strong>Available Quantity:</strong> @Model.Quantity</p>
+
+            @if (Model.Quantity == 0)
+            {
+                <p class="text-danger out-of-stock">Out of Stock</p>
+            }
+            else
+            {
+                <form asp-action="AddToCart" method="post">
+                    <input type="hidden" name="bookId" value="@Model.Id" />
+                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                </form>
+            }
+
             <!-- Display Success Message -->
             @if (TempData["CartMessage"] != null)
             {
@@ -28,14 +41,6 @@
                     @TempData["CartMessage"]
                 </div>
             }
-
-            <!-- Add to Cart Button -->
-            <form asp-action="AddToCart" asp-controller="Books" method="post">
-                <input type="hidden" name="bookId" value="@Model.Id" />
-                <button type="submit" class="btn btn-primary">
-                    Add to Cart
-                </button>
-            </form>
         </div>
     </div>
 </div>
@@ -54,5 +59,10 @@
 
     .book-info {
         flex: 1;
+    }
+
+    .out-of-stock {
+        font-size: 1.5em; /* Increase the font size */
+        font-weight: bold; /* Make the text bold */
     }
 </style>
