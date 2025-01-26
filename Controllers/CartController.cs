@@ -132,11 +132,23 @@ namespace BookShopTest.Controllers
 
         [HttpPost("PlaceOrder")]
         [ValidateAntiForgeryToken]
-        public IActionResult PlaceOrder()
+        public async Task<IActionResult> PlaceOrder()
         {
             var userId = User.Identity.Name;
             var cartItems = dbContext.CartItems.Include(c => c.Book).Where(c => c.UserId == userId).ToList();
             var totalPrice = cartItems.Sum(c => c.Quantity * c.Book.Price);
+
+            foreach (var item in cartItems)
+            {
+                var book = await dbContext.Books.FindAsync(item.BookId);
+                if (book != null)
+                {
+                    book.Quantity -= item.Quantity;
+                    dbContext.Books.Update(book);
+                }
+            }
+
+            await dbContext.SaveChangesAsync();
 
             ViewBag.TotalPrice = totalPrice;
 

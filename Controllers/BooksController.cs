@@ -114,6 +114,7 @@ namespace BookShopTest.Controllers
                 existingBook.Genre = book.Genre;
                 existingBook.Price = book.Price;
                 existingBook.Description = book.Description;
+                existingBook.Quantity = book.Quantity; // Add this line
 
                 if (coverImage != null)
                 {

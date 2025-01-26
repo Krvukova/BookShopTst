@@ -10,6 +10,7 @@ namespace BookShopTest.Models
         public decimal Price { get; set; }
         public string Genre { get; set; }
         public IFormFile CoverImage { get; set; }
+        public int Quantity { get; set; } // Add this line
 
         public string Description { get; set; }
     }
