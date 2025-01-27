@@ -14,11 +14,17 @@
     <a asp-action="Index" asp-route-sortOrder="date_desc">Newest</a>
 </p>
 
-<!-- Display TempData message -->
+<!-- Display TempData messages -->
 @if (TempData["CartMessage"] != null)
 {
     <div class="alert alert-success">
         @TempData["CartMessage"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
     </div>
 }
 
@@ -73,6 +79,7 @@
                             <form asp-controller="Books" asp-action="AddToCart" method="post" class="d-inline">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="bookId" value="@book.Id" />
+                                <input type="hidden" name="returnUrl" value="@Url.Action("Index")" />
                                 <button type="submit" class="btn btn-sm btn-success">
                                     <i class="fas fa-shopping-cart"></i> Add to Cart
                                 </button>

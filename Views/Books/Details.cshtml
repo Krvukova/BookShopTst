@@ -8,11 +8,11 @@
     <div class="details-container">
         @if (!string.IsNullOrEmpty(Model.CoverImageUrl))
         {
-                <img src="@Model.CoverImageUrl" alt="Cover of @Model.Title" class="book-cover" />
+            <img src="@Model.CoverImageUrl" alt="Cover of @Model.Title" class="book-cover" />
         }
         else
         {
-                <p>No image available</p>
+            <p>No image available</p>
         }
         <div class="book-info">
             <h1>@Model.Title</h1>
@@ -22,80 +22,82 @@
             <p><strong>Price:</strong> @Model.Price.ToString("C")</p>
             <p><strong>Available Quantity:</strong> @Model.Quantity</p>
 
+            <!-- Display TempData messages -->
+            @if (TempData["CartMessage"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["CartMessage"]
+                </div>
+            }
             @if (TempData["ErrorMessage"] != null)
             {
-                    <div class="alert alert-danger">
+                <div class="alert alert-danger">
                     @TempData["ErrorMessage"]
-                    </div>
+                </div>
             }
 
             @if (Model.Quantity == 0)
             {
-                    <p class="text-danger out-of-stock">Out of Stock</p>
+                <p class="text-danger out-of-stock">Out of Stock</p>
             }
             else
             {
-                    <form asp-action="AddToCart" method="post">
-                        <input type="hidden" name="bookId" value="@Model.Id" />
-                        <button type="submit" class="btn btn-primary">Add to Cart</button>
-                    </form>
+                <form asp-controller="Books" asp-action="AddToCart" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="bookId" value="@Model.Id" />
+                    <input type="hidden" name="returnUrl" value="@Url.Action("Details", new { id = Model.Id })" />
+                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                </form>
             }
 
-            @if (TempData["CartMessage"] != null)
-            {
-                    <div class="alert alert-success">
-                    @TempData["CartMessage"]
-                    </div>
-            }
-
-            <a href="@Url.Action("Index", "Cart")" class="btn btn-success mt-3">Go to Cart</a> 
+            <a href="@Url.Action("Index", "Cart")" class="btn btn-success mt-3">Go to Cart</a>
             <a href="@Url.Action("Index", "Books")" class="btn btn-secondary mt-3">Go Back</a>
 
             <h3>Reviews</h3>
             @if (Model.Reviews != null && Model.Reviews.Any())
             {
-                    <p>Average Rating: @Model.Reviews.Average(r => r.Rating)</p>
-                    <ul>
+                <p>Average Rating: @Model.Reviews.Average(r => r.Rating)</p>
+                <ul>
                     @foreach (var review in Model.Reviews)
                     {
-                                <li>
-                                    <strong>@review.User.UserName</strong> (@review.Rating/5): @review.Comment
-                                    <br />
-                                    <small>@review.DatePosted.ToShortDateString()</small>
-                                </li>
+                        <li>
+                            <strong>@review.User.UserName</strong> (@review.Rating/5): @review.Comment
+                            <br />
+                            <small>@review.DatePosted.ToShortDateString()</small>
+                        </li>
                     }
-                    </ul>
+                </ul>
             }
             else
             {
-                    <p>No reviews yet.</p>
+                <p>No reviews yet.</p>
             }
 
             @if (User.Identity.IsAuthenticated)
             {
-                    <h4>Leave a Review</h4>
-                    <form asp-action="AddReview" method="post">
-                        <input type="hidden" name="bookId" value="@Model.Id" />
-                        <div class="form-group">
-                            <label for="Rating">Rating</label>
-                            <select name="Rating" class="form-control">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="Comment">Comment</label>
-                            <textarea name="Comment" class="form-control"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Submit Review</button>
-                    </form>
+                <h4>Leave a Review</h4>
+                <form asp-action="AddReview" method="post">
+                    <input type="hidden" name="bookId" value="@Model.Id" />
+                    <div class="form-group">
+                        <label for="Rating">Rating</label>
+                        <select name="Rating" class="form-control">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="Comment">Comment</label>
+                        <textarea name="Comment" class="form-control"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                </form>
             }
             else
             {
-                    <p>Please <a href="/Identity/Account/Login">log in</a> to leave a review.</p>
+                <p>Please <a href="/Identity/Account/Login">log in</a> to leave a review.</p>
             }
         </div>
     </div>
