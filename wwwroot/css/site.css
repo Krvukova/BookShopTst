@@ -20,3 +20,33 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.card {
+    transition: transform 0.3s ease;
+}
+
+    .card:hover {
+        transform: scale(1.05);
+    }
+
+.card-img-top {
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: cover;
+}
+body {
+    font-family: 'Roboto', sans-serif;
+}
+.button {
+    transition: background-color 0.3s ease;
+}
+.button:hover {
+        background-color: var(--secondary-color);
+    }
+.card::before {
+    content: '';
+    display: block;
+    height: 5px;
+    background-color: var(--primary-color);
+}

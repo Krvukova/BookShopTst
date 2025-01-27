@@ -14,7 +14,6 @@
     <a asp-action="Index" asp-route-sortOrder="date_desc">Newest</a>
 </p>
 
-
 <!-- Display TempData message -->
 @if (TempData["CartMessage"] != null)
 {
@@ -70,11 +69,11 @@
                     <p class="card-text">@book.Price.ToString("C")</p>
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="btn-group">
-                            <a href="@Url.Action("Details", new { id = book.Id })" class="btn btn-sm btn-outline-secondary">View Details</a>
+                            <a href="@Url.Action("Details", new { id = book.Id })" class="btn btn-sm btn-primary">View Details</a>
                             <form asp-controller="Books" asp-action="AddToCart" method="post" class="d-inline">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="bookId" value="@book.Id" />
-                                <button type="submit" class="btn btn-sm btn-outline-primary">
+                                <button type="submit" class="btn btn-sm btn-success">
                                     <i class="fas fa-shopping-cart"></i> Add to Cart
                                 </button>
                             </form>

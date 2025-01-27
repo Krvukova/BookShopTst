@@ -2,25 +2,37 @@
     ViewData["Title"] = "Home Page";
 }
 
+<nav aria-label="Main Navigation">
+    <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+    </ul>
+</nav>
+
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
 
 <!-- Display the books -->
-<div class="book-list">
-    @foreach (var book in Model)
-    {
-        <div class="book-item">
-            <!-- Display the book's image -->
-            @if (!string.IsNullOrEmpty(book.CoverImageUrl))
-            {
-                <img src="@book.CoverImageUrl" alt="@book.Title" width="150" height="200" />
-            }
-            <h2>@book.Title</h2>
-            <p>@book.Author</p>
-            <p>@book.Price.ToString("C")</p>
-            <a href="@Url.Action("Details", "Books", new { id = book.Id })" class="btn btn-primary">View Details</a>
-        </div>
-    }
+<div class="container mt-4">
+    <div class="row">
+        @foreach (var book in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    @if (!string.IsNullOrEmpty(book.CoverImageUrl))
+                    {
+                        <img src="@book.CoverImageUrl" class="card-img-top" alt="@book.Title" />
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@book.Title</h5>
+                        <p class="card-text">@book.Author</p>
+                        <p class="card-text">@book.Price.ToString("C")</p>
+                        <a href="@Url.Action("Details", "Books", new { id = book.Id })" class="btn btn-primary button">View Details</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>
