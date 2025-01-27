@@ -4,6 +4,7 @@ using BookShopTest.Data;
 using BookShopTest.Models;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookShopTest.Controllers
 {
@@ -55,7 +56,29 @@ namespace BookShopTest.Controllers
 
             return View(order);
         }
+        public async Task<IActionResult> History()
+        {
+            var userId = User.Identity.Name;
+            var orders = await _context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Book)
+                .Where(o => o.UserId == userId)
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
 
-        // Other CRUD actions (Edit, Delete) can be implemented similarly
+            return View(orders);
+        }
+        // GET: Orders/AllOrders
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AllOrders()
+        {
+            var orders = await _context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Book)
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
+
+            return View(orders);
+        }
     }
 }

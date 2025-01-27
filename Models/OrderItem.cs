@@ -1,20 +1,30 @@
 ﻿using BookShopTest.Models.Entities;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookShopTest.Models
 {
     public class OrderItem
     {
-        public int OrderItemId { get; set; }
-        public int OrderId { get; set; }
-        public int BookId { get; set; }
+        public int Id { get; set; } // Primary Key
+
+        [Required]
+        public int OrderId { get; set; } // Foreign Key
+
+        [Required]
+        public int BookId { get; set; } // Foreign Key
+
+        [Required]
         public int Quantity { get; set; }
 
-        [Range(0, double.MaxValue, ErrorMessage = "Unit price must be a positive value.")]
-        public decimal UnitPrice { get; set; }
+        [Required]
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal Price { get; set; } // Add this line
 
-        public decimal TotalPrice { get; set; }
-        public virtual Order Order { get; set; }
-        public virtual Book Book { get; set; }
+        [ForeignKey("OrderId")]
+        public Order Order { get; set; } // Navigation property
+
+        [ForeignKey("BookId")]
+        public Book Book { get; set; } // Navigation property
     }
 }

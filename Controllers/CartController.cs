@@ -147,6 +147,22 @@ namespace BookShopTest.Controllers
             var cartItems = dbContext.CartItems.Include(c => c.Book).Where(c => c.UserId == userId).ToList();
             var totalPrice = cartItems.Sum(c => c.Quantity * c.Book.Price);
 
+            var order = new Order
+            {
+                UserId = userId,
+                OrderDate = DateTime.Now,
+                TotalAmount = totalPrice,
+                OrderStatus = "Pending",
+                OrderItems = cartItems.Select(c => new OrderItem
+                {
+                    BookId = c.BookId,
+                    Quantity = c.Quantity,
+                    Price = c.Book.Price
+                }).ToList()
+            };
+
+            dbContext.Orders.Add(order);
+
             foreach (var item in cartItems)
             {
                 var book = await dbContext.Books.FindAsync(item.BookId);
@@ -162,6 +178,10 @@ namespace BookShopTest.Controllers
                 }
             }
 
+            await dbContext.SaveChangesAsync();
+
+            // Clear the cart
+            dbContext.CartItems.RemoveRange(cartItems);
             await dbContext.SaveChangesAsync();
 
             ViewBag.TotalPrice = totalPrice;

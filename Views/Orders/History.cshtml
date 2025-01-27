@@ -1,0 +1,34 @@
+﻿@model IEnumerable<BookShopTest.Models.Order>
+
+@{
+    ViewData["Title"] = "Order History";
+}
+
+<h1>Order History</h1>
+
+@if (!Model.Any())
+{
+    <p>You have no past orders.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Order Date</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model)
+            {
+                <tr>
+                    <td>@order.OrderDate.ToString("g")</td>
+                    <td>@order.TotalAmount.ToString("C")</td>
+                    <td>@order.OrderStatus</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
