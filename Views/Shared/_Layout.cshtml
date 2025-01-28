@@ -75,6 +75,13 @@
             </div>
         </nav>
     </header>
+    @if (ViewContext.RouteData.Values["controller"]?.ToString() == "Books" && ViewContext.RouteData.Values["action"]?.ToString() == "Index")
+    {
+        <div class="wide-photo">
+            <img src="~/images/knjige3.jpg" alt="Wide Photo" class="img-fluid" />
+        </div>
+    }
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()

@@ -36,7 +36,7 @@ body {
 }
 .navbar {
     background-color: #34495e !important; /* Ensure it overrides other styles */
-    font-size: 20px; /* Adjust the size as needed */
+    font-size: 18px; /* Adjust the size as needed */
     font-family: 'Roboto', sans-serif;
 }
 
@@ -82,3 +82,12 @@ body {
     height: 5px;
     background-color: var(--primary-color);
 }
+.wide-photo {
+    width: 100%;
+    margin-top: -18px; /* Adjust this value based on the height of your navbar */
+}
+
+    .wide-photo img {
+        width: 100%;
+        height: 300px;
+    }
