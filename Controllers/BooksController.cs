@@ -273,7 +273,7 @@ namespace BookShopTest.Controllers
                 if (book == null || book.Quantity == 0)
                 {
                     TempData["ErrorMessage"] = "This book is out of stock.";
-                    return Redirect(returnUrl ?? "/Books/Details/" + bookId);
+                    return Redirect(returnUrl);
                 }
 
                 var userId = User.Identity.Name;
@@ -288,7 +288,7 @@ namespace BookShopTest.Controllers
                     else
                     {
                         TempData["ErrorMessage"] = $"Only {book.Quantity} copies of {book.Title} are available for purchase.";
-                        return Redirect(returnUrl ?? "/Books/Details/" + bookId);
+                        return Redirect(returnUrl);
                     }
                 }
                 else
@@ -313,7 +313,7 @@ namespace BookShopTest.Controllers
                 // Log the exception (ex) for further analysis
             }
 
-            return Redirect(returnUrl ?? "/Books/Details/" + bookId);
+            return Redirect(returnUrl);
         }
     }
 }
