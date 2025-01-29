@@ -103,9 +103,9 @@ namespace BookShopTest.Controllers
             var review = new Review
             {
                 BookId = bookId,
-                UserId = user.Id, // Set the UserId to the current user's ID
+                UserId = user.Id,
                 Rating = rating,
-                Comment = comment,
+                Comment = comment ?? string.Empty, // Set Comment to empty string if null
                 DatePosted = DateTime.Now
             };
 
@@ -234,7 +234,7 @@ namespace BookShopTest.Controllers
                 if (book == null || book.Quantity == 0)
                 {
                     TempData["ErrorMessage"] = "This book is out of stock.";
-                    return Redirect(returnUrl);
+                    return Redirect(returnUrl ?? "/Books/Details/" + bookId);
                 }
 
                 var userId = User.Identity.Name;
@@ -249,7 +249,7 @@ namespace BookShopTest.Controllers
                     else
                     {
                         TempData["ErrorMessage"] = $"Only {book.Quantity} copies of {book.Title} are available for purchase.";
-                        return Redirect(returnUrl);
+                        return Redirect(returnUrl ?? "/Books/Details/" + bookId);
                     }
                 }
                 else
@@ -274,7 +274,7 @@ namespace BookShopTest.Controllers
                 // Log the exception (ex) for further analysis
             }
 
-            return Redirect(returnUrl);
+            return Redirect(returnUrl ?? "/Books/Details/" + bookId);
         }
     }
 }

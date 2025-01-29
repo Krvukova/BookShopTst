@@ -9,10 +9,12 @@ namespace BookShopTest.Models.Entities
         public int Id { get; set; }
         public int BookId { get; set; }
         public string UserId { get; set; }
-        [Range(1, 5)]
+
+        [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5.")]
         public int Rating { get; set; }
-        [Required]
-        public string Comment { get; set; }
+
+        public string Comment { get; set; } // Comment is no longer required
+
         public DateTime DatePosted { get; set; }
 
         public virtual Book Book { get; set; }

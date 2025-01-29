@@ -22,17 +22,17 @@
             <p><strong>Price:</strong> @Model.Price.ToString("C")</p>
             <p><strong>Available Quantity:</strong> @Model.Quantity</p>
 
-            <!-- Display TempData messages -->
-            @if (TempData["CartMessage"] != null)
-            {
-                <div class="alert alert-success">
-                    @TempData["CartMessage"]
-                </div>
-            }
             @if (TempData["ErrorMessage"] != null)
             {
                 <div class="alert alert-danger">
                     @TempData["ErrorMessage"]
+                </div>
+            }
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["SuccessMessage"]
                 </div>
             }
 
@@ -42,15 +42,21 @@
             }
             else
             {
-                <form asp-controller="Books" asp-action="AddToCart" method="post">
-                    @Html.AntiForgeryToken()
+                <form asp-action="AddToCart" method="post">
                     <input type="hidden" name="bookId" value="@Model.Id" />
                     <input type="hidden" name="returnUrl" value="@Url.Action("Details", new { id = Model.Id })" />
                     <button type="submit" class="btn btn-primary">Add to Cart</button>
                 </form>
             }
 
-            <a href="@Url.Action("Index", "Cart")" class="btn btn-success mt-3">Go to Cart</a>
+            @if (TempData["CartMessage"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["CartMessage"]
+                </div>
+            }
+
+            <a href="@Url.Action("Index", "Cart")" class="btn btn-secondary mt-3">Go to Cart</a>
             <a href="@Url.Action("Index", "Books")" class="btn btn-secondary mt-3">Go Back</a>
 
             <h3>Reviews</h3>
@@ -89,7 +95,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="Comment">Comment</label>
+                        <label for="Comment">Comment (optional)</label>
                         <textarea name="Comment" class="form-control"></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit Review</button>
@@ -103,6 +109,9 @@
     </div>
 </div>
 
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
 <style>
     .details-container {
         display: flex;
@@ -110,9 +119,9 @@
     }
 
     .book-cover {
-        width: 300px; /* Increase the width to make the image larger */
+        width: 350px; /* Increase the width to make the image larger */
         height: auto;
-        margin-right: 20px;
+        margin-right: 10px;
     }
 
     .book-info {

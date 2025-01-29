@@ -29,6 +29,13 @@
                 </div>
             }
 
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+
             @if (Model.Quantity == 0)
             {
                 <p class="text-danger out-of-stock">Out of Stock</p>
@@ -37,6 +44,7 @@
             {
                 <form asp-action="AddToCart" method="post">
                     <input type="hidden" name="bookId" value="@Model.Id" />
+                    <input type="hidden" name="returnUrl" value="@Url.Action("Details", new { id = Model.Id })" />
                     <button type="submit" class="btn btn-primary">Add to Cart</button>
                 </form>
             }
@@ -87,7 +95,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="Comment">Comment</label>
+                        <label for="Comment">Comment (optional)</label>
                         <textarea name="Comment" class="form-control"></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit Review</button>
@@ -101,24 +109,6 @@
     </div>
 </div>
 
-<style>
-    .details-container {
-        display: flex;
-        align-items: flex-start;
-    }
-
-    .book-cover {
-        width: 300px; /* Increase the width to make the image larger */
-        height: auto;
-        margin-right: 20px;
-    }
-
-    .book-info {
-        flex: 1;
-    }
-
-    .out-of-stock {
-        font-size: 1.5em; /* Increase the font size */
-        font-weight: bold; /* Make the text bold */
-    }
-</style>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
