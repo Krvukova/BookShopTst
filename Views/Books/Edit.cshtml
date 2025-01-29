@@ -1,7 +1,7 @@
-﻿@model BookShopTest.Models.Entities.Book
+﻿@model BookShopTest.Models.EditBookViewModel
 
 @{
-    ViewData["Title"] = "Edit Book";
+    ViewData["Title"] = "Uredi Knjigu";
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -15,57 +15,71 @@ else
     <form method="post" enctype="multipart/form-data">
         <!-- Hidden field for the book Id -->
         <input type="hidden" name="Id" value="@Model.Id" />
+        <input type="hidden" asp-for="ExistingCoverImageUrl" />
 
         <div class="mt-3">
-            <label class="form-label">Title</label>
-            <input type="text" class="form-control" asp-for="Title" value="@Model.Title" />
+            <label class="form-label">Naslov</label>
+            <input type="text" class="form-control" asp-for="Title" />
+            <span asp-validation-for="Title" class="text-danger"></span>
         </div>
 
         <div class="mt-3">
-            <label class="form-label">Author</label>
-            <input type="text" class="form-control" asp-for="Author" value="@Model.Author" />
+            <label class="form-label">Autor</label>
+            <input type="text" class="form-control" asp-for="Author" />
+            <span asp-validation-for="Author" class="text-danger"></span>
         </div>
 
         <div class="mt-3">
-            <label class="form-label">Price</label>
-            <input type="number" class="form-control" step="0.01" min="0" asp-for="Price" value="@Model.Price" />
+            <label class="form-label">Cijena</label>
+            <input type="number" class="form-control" step="0.01" min="0" asp-for="Price" />
+            <span asp-validation-for="Price" class="text-danger"></span>
         </div>
 
         <div class="mt-3">
-            <label class="form-label">Genre</label>
-            <input type="text" class="form-control" asp-for="Genre" value="@Model.Genre" />
+            <label class="form-label">Žanr</label>
+            <input type="text" class="form-control" asp-for="Genre" />
+            <span asp-validation-for="Genre" class="text-danger"></span>
         </div>
+
         <div class="mt-3">
-            <label class="form-label">Description</label>
+            <label class="form-label">Opis</label>
             <textarea class="form-control" asp-for="Description" rows="4"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
         </div>
 
         <div class="form-group">
             <label asp-for="Quantity"></label>
             <input asp-for="Quantity" class="form-control" />
+            <span asp-validation-for="Quantity" class="text-danger"></span>
         </div>
+
         <!-- File Upload Field for Cover Image -->
         <div class="mt-3">
-            <label for="CoverImage">Cover Image</label>
+            <label for="CoverImage">Naslovna Slika</label>
             <input type="file" class="form-control" id="CoverImage" name="CoverImage" />
+            <span asp-validation-for="CoverImage" class="text-danger"></span>
 
             <!-- Display the current cover image if available -->
-            @if (!string.IsNullOrEmpty(Model.CoverImageUrl))
+            @if (!string.IsNullOrEmpty(Model.ExistingCoverImageUrl))
             {
                 <div class="mt-2">
-                    <img src="@Model.CoverImageUrl" alt="Cover Image" width="100" />
+                    <img src="@Model.ExistingCoverImageUrl" alt="Cover Image" width="100" />
                 </div>
             }
         </div>
 
         <div class="mt-3">
-            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="submit" class="btn btn-primary">Spremi</button>
         </div>
     </form>
 
     <!-- Separate form for delete -->
     <form method="post" asp-action="Delete" asp-controller="Books" class="mt-3">
         <input type="hidden" asp-for="Id" />
-        <button type="submit" class="btn btn-danger">Delete</button>
+        <button type="submit" class="btn btn-danger">Obriši</button>
     </form>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
 }

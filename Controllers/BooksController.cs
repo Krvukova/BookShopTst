@@ -175,25 +175,45 @@ namespace BookShopTest.Controllers
                 return NotFound();
             }
 
-            return View(book);
+            var viewModel = new EditBookViewModel
+            {
+                Id = book.Id,
+                Title = book.Title,
+                Author = book.Author,
+                Price = book.Price,
+                Genre = book.Genre,
+                Description = book.Description,
+                Quantity = book.Quantity,
+                ExistingCoverImageUrl = book.CoverImageUrl
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Book book, IFormFile coverImage)
+        [HttpPost]
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditBookViewModel model)
         {
-            var existingBook = await dbContext.Books.FindAsync(book.Id);
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var existingBook = await dbContext.Books.FindAsync(model.Id);
 
             if (existingBook != null)
             {
-                existingBook.Title = book.Title;
-                existingBook.Author = book.Author;
-                existingBook.Genre = book.Genre;
-                existingBook.Price = book.Price;
-                existingBook.Description = book.Description;
-                existingBook.Quantity = book.Quantity; // Add this line
+                existingBook.Title = model.Title;
+                existingBook.Author = model.Author;
+                existingBook.Genre = model.Genre;
+                existingBook.Price = model.Price;
+                existingBook.Description = model.Description;
+                existingBook.Quantity = model.Quantity;
 
-                if (coverImage != null)
+                if (model.CoverImage != null)
                 {
+                    // Delete the old cover image if it exists
                     if (!string.IsNullOrEmpty(existingBook.CoverImageUrl))
                     {
                         var oldFilePath = Path.Combine(_env.WebRootPath, existingBook.CoverImageUrl.TrimStart('/'));
@@ -203,14 +223,20 @@ namespace BookShopTest.Controllers
                         }
                     }
 
-                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(coverImage.FileName);
+                    // Save the new cover image
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.CoverImage.FileName);
                     var filePath = Path.Combine(_env.WebRootPath, "images", fileName);
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
-                        await coverImage.CopyToAsync(stream);
+                        await model.CoverImage.CopyToAsync(stream);
                     }
 
                     existingBook.CoverImageUrl = "/images/" + fileName;
+                }
+                else
+                {
+                    // Retain the old cover image
+                    existingBook.CoverImageUrl = model.ExistingCoverImageUrl;
                 }
 
                 await dbContext.SaveChangesAsync();
