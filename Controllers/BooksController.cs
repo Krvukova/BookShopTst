@@ -121,28 +121,41 @@ namespace BookShopTest.Controllers
             return View();
         }
 
-       
         [HttpPost]
-        public async Task<IActionResult> Add(Book book, IFormFile coverImage)
+        public async Task<IActionResult> Add(AddBookViewModel model)
         {
-            if (coverImage != null)
+            if (ModelState.IsValid)
             {
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(coverImage.FileName);
-                var filePath = Path.Combine(_env.WebRootPath, "images", fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                var book = new Book
                 {
-                    await coverImage.CopyToAsync(stream);
+                    Title = model.Title,
+                    Author = model.Author,
+                    Price = model.Price,
+                    Genre = model.Genre,
+                    Quantity = model.Quantity,
+                    Description = model.Description,
+                    DateAdded = DateTime.Now
+                };
+
+                if (model.CoverImage != null)
+                {
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.CoverImage.FileName);
+                    var filePath = Path.Combine(_env.WebRootPath, "images", fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await model.CoverImage.CopyToAsync(stream);
+                    }
+
+                    book.CoverImageUrl = "/images/" + fileName;
                 }
 
-                book.CoverImageUrl = "/images/" + fileName;
+                dbContext.Books.Add(book);
+                await dbContext.SaveChangesAsync();
+                return RedirectToAction("Index");
             }
 
-            book.DateAdded = DateTime.Now; // Set the DateAdded field
-
-            dbContext.Books.Add(book);
-            await dbContext.SaveChangesAsync();
-            return RedirectToAction("Index");
+            return View(model);
         }
 
         [HttpGet]
