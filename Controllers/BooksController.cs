@@ -29,9 +29,7 @@ namespace BookShopTest.Controllers
 
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> Index(string searchQuery, string genre, string sortOrder)
+        public IActionResult Index(string searchQuery, string genre, string sortOrder)
         {
             var books = dbContext.Books.AsQueryable();
 
@@ -64,7 +62,10 @@ namespace BookShopTest.Controllers
                     break;
             }
 
-            return View(await books.ToListAsync());
+            var genres = dbContext.Books.Select(b => b.Genre).Distinct().ToList();
+            ViewBag.Genres = genres;
+
+            return View(books.ToList());
         }
 
         [HttpGet]
@@ -315,5 +316,6 @@ namespace BookShopTest.Controllers
 
             return Redirect(returnUrl);
         }
+
     }
 }
