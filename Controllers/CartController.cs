@@ -96,38 +96,61 @@ namespace BookShopTest.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddToCart(int bookId)
+        public IActionResult AddToCart(int bookId, string returnUrl)
         {
-            var book = dbContext.Books.FirstOrDefault(b => b.Id == bookId);
-            if (book == null)
+            try
             {
-                return NotFound();
-            }
-
-            var userId = User.Identity.Name;
-            var existingCartItem = dbContext.CartItems.FirstOrDefault(c => c.BookId == bookId && c.UserId == userId);
-
-            if (existingCartItem != null)
-            {
-                existingCartItem.Quantity++;
-            }
-            else
-            {
-                var cartItem = new CartItem
+                if (!User.Identity.IsAuthenticated)
                 {
-                    BookId = book.Id,
-                    Quantity = 1,
-                    Price = book.Price,
-                    UserId = userId
-                };
-                dbContext.CartItems.Add(cartItem);
+                    TempData["ErrorMessage"] = "User must be logged in to add items to cart.";
+                    return Redirect("/Identity/Account/Login");
+                }
+
+                var book = dbContext.Books.FirstOrDefault(b => b.Id == bookId);
+                if (book == null || book.Quantity == 0)
+                {
+                    TempData["ErrorMessage"] = "This book is out of stock.";
+                    return Redirect(returnUrl ?? "/Books/Details/" + bookId);
+                }
+
+                var userId = User.Identity.Name;
+                var existingCartItem = dbContext.CartItems.FirstOrDefault(c => c.BookId == bookId && c.UserId == userId);
+
+                if (existingCartItem != null)
+                {
+                    if (existingCartItem.Quantity < book.Quantity)
+                    {
+                        existingCartItem.Quantity++;
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = $"Only {book.Quantity} copies of {book.Title} are available for purchase.";
+                        return Redirect(returnUrl ?? "/Books/Details/" + bookId);
+                    }
+                }
+                else
+                {
+                    var cartItem = new CartItem
+                    {
+                        BookId = book.Id,
+                        Quantity = 1,
+                        Price = book.Price,
+                        UserId = userId
+                    };
+                    dbContext.CartItems.Add(cartItem);
+                }
+
+                dbContext.SaveChanges();
+
+                TempData["CartMessage"] = "Book has been added to cart";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "An error occurred while adding the book to the cart.";
+                // Log the exception (ex) for further analysis
             }
 
-            dbContext.SaveChanges();
-
-            TempData["CartMessage"] = "Book has been added to cart";
-
-            return RedirectToAction("Index");
+            return Redirect(returnUrl ?? "/Books/Details/" + bookId);
         }
 
         [HttpPost("PlaceOrder")]

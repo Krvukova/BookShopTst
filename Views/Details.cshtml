@@ -29,13 +29,6 @@
                 </div>
             }
 
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div class="alert alert-success">
-                    @TempData["SuccessMessage"]
-                </div>
-            }
-
             @if (Model.Quantity == 0)
             {
                 <p class="text-danger out-of-stock">Out of Stock</p>
