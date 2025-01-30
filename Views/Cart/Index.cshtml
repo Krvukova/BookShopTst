@@ -23,47 +23,50 @@
 }
 else
 {
-    <form asp-controller="Cart" asp-action="UpdateCart" method="post">
-        @Html.AntiForgeryToken()
-        <table class="table">
-            <thead>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+                <th>Remove</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
                 <tr>
-                    <th>Image</th>
-                    <th>Title</th>
-                    <th>Author</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Subtotal</th>
-                    <th>Remove</th>
+                    <td><img src="@item.Book.CoverImageUrl" alt="@item.Book.Title" style="width: 50px; height: auto;"></td>
+                    <td>@item.Book.Title</td>
+                    <td>@item.Book.Author</td>
+                    <td>@item.Book.Price.ToString("C")</td>
+                    <td>
+                        <form asp-controller="Cart" asp-action="UpdateCartItem" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="bookId" value="@item.Book.Id" />
+                            <input type="number" name="quantity" value="@item.Quantity" min="1" class="quantity-input" onchange="this.form.submit()" />
+                        </form>
+                    </td>
+                    <td class="item-subtotal">@((item.Quantity * item.Book.Price).ToString("C"))</td>
+                    <td>
+                        <form asp-controller="Cart" asp-action="RemoveItem" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="bookId" value="@item.Book.Id" />
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td><img src="@item.Book.CoverImageUrl" alt="@item.Book.Title" style="width: 50px; height: auto;"></td>
-                        <td>@item.Book.Title</td>
-                        <td>@item.Book.Author</td>
-                        <td>@item.Book.Price.ToString("C")</td>
-                        <td>
-                            <input type="number" name="quantities[@item.Book.Id]" value="@item.Quantity" min="1" class="quantity-input" />
-                        </td>
-                        <td class="item-subtotal">@((item.Quantity * item.Book.Price).ToString("C"))</td>
-                        <td>
-                            <button type="submit" name="RemoveItem" value="@item.Book.Id" class="btn btn-danger">Remove</button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+            }
+        </tbody>
+    </table>
 
-        <div class="summary">
-            <p><strong>Total Quantity:</strong> <span id="total-quantity">@Model.Sum(x => x.Quantity)</span></p>
-            <p><strong>Total Price:</strong> <span id="total-price">@Model.Sum(x => x.Quantity * x.Book.Price).ToString("C")</span></p>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Update Cart</button>
-    </form>
+    <div class="summary">
+        <p><strong>Total Quantity:</strong> <span id="total-quantity">@Model.Sum(x => x.Quantity)</span></p>
+        <p><strong>Total Price:</strong> <span id="total-price">@Model.Sum(x => x.Quantity * x.Book.Price).ToString("C")</span></p>
+    </div>
     <br />
     <form asp-controller="Cart" asp-action="Checkout" method="post">
         @Html.AntiForgeryToken()

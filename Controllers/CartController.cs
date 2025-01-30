@@ -32,41 +32,30 @@ namespace BookShopTest.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult UpdateCart(Dictionary<int, int> quantities, int? RemoveItem)
+        public IActionResult UpdateCartItem(int bookId, int quantity)
         {
             var userId = User.Identity.Name;
-            var cartItems = dbContext.CartItems.Include(c => c.Book).Where(c => c.UserId == userId).ToList();
+            var cartItem = dbContext.CartItems.Include(c => c.Book).FirstOrDefault(c => c.BookId == bookId && c.UserId == userId);
 
-            if (RemoveItem.HasValue)
+            if (cartItem != null)
             {
-                var itemToRemove = cartItems.FirstOrDefault(c => c.BookId == RemoveItem.Value);
-                if (itemToRemove != null)
+                var book = dbContext.Books.FirstOrDefault(b => b.Id == cartItem.BookId);
+                if (book != null)
                 {
-                    dbContext.CartItems.Remove(itemToRemove);
-                }
-            }
-
-            foreach (var item in quantities)
-            {
-                var cartItem = cartItems.FirstOrDefault(c => c.BookId == item.Key);
-                if (cartItem != null)
-                {
-                    var book = dbContext.Books.FirstOrDefault(b => b.Id == cartItem.BookId);
-                    if (book != null)
+                    if (quantity > book.Quantity)
                     {
-                        if (item.Value > book.Quantity)
-                        {
-                            TempData["ErrorMessage"] = $"Only {book.Quantity} copies of {book.Title} are available for purchase.";
-                            return RedirectToAction("Index");
-                        }
-                        cartItem.Quantity = item.Value > 0 ? item.Value : 1;
+                        TempData["ErrorMessage"] = $"Only {book.Quantity} copies of {book.Title} are available for purchase.";
+                        return RedirectToAction("Index");
                     }
+                    cartItem.Quantity = quantity > 0 ? quantity : 1;
+                    dbContext.SaveChanges();
+                    TempData["SuccessMessage"] = "Cart updated successfully.";
                 }
             }
-
-            dbContext.SaveChanges();
-
-            TempData["SuccessMessage"] = "Cart updated successfully.";
+            else
+            {
+                TempData["ErrorMessage"] = "Item not found in cart.";
+            }
 
             return RedirectToAction("Index");
         }
@@ -82,13 +71,15 @@ namespace BookShopTest.Controllers
             {
                 dbContext.CartItems.Remove(cartItem);
                 dbContext.SaveChanges();
+                TempData["SuccessMessage"] = "Item removed from cart.";
             }
-
-            TempData["SuccessMessage"] = "Item removed from cart.";
+            else
+            {
+                TempData["ErrorMessage"] = "Item not found in cart.";
+            }
 
             return RedirectToAction("Index");
         }
-
         public IActionResult Checkout()
         {
             var userId = User.Identity.Name;
