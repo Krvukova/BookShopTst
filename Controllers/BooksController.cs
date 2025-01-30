@@ -101,6 +101,14 @@ namespace BookShopTest.Controllers
                 return RedirectToAction("Details", new { id = bookId });
             }
 
+            // Check if the user exists in the database
+            var userExists = await dbContext.Users.AnyAsync(u => u.Id == user.Id);
+            if (!userExists)
+            {
+                TempData["ErrorMessage"] = "User does not exist in the database.";
+                return RedirectToAction("Details", new { id = bookId });
+            }
+
             var review = new Review
             {
                 BookId = bookId,
