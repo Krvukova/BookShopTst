@@ -262,6 +262,11 @@ namespace BookShopTest.Controllers
             {
                 dbContext.Books.Remove(book);
                 await dbContext.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Book deleted successfully.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Book not found.";
             }
             return RedirectToAction("List", "Books");
         }

@@ -9,6 +9,13 @@
     </div>
 }
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
 <div class="mb-3">
     <a href="@Url.Action("Add", "Books")" class="btn btn-success">Add New Book</a>
 </div>
@@ -20,7 +27,7 @@
             <th>Author</th>
             <th>Price</th>
             <th>Genre</th>
-            <th>Quantity</th> <!-- Add this line -->
+            <th>Quantity</th>
             <th> </th>
         </tr>
     </thead>
@@ -33,13 +40,14 @@
                 <td>@book.Author</td>
                 <td>@book.Price</td>
                 <td>@book.Genre</td>
-                <td>@book.Quantity</td> <!-- Add this line -->
+                <td>@book.Quantity</td>
                 <td>
                     <!-- Action buttons (Edit, Delete) -->
                     <a href="@Url.Action("Edit", "Books", new { id = book.Id })" class="btn btn-primary btn-sm">Edit</a>
 
                     <!-- Delete button -->
                     <form action="@Url.Action("Delete", "Books", new { id = book.Id })" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                     </form>
                 </td>
