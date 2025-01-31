@@ -161,7 +161,8 @@ namespace BookShopTest.Controllers
 
                 dbContext.Books.Add(book);
                 await dbContext.SaveChangesAsync();
-                return RedirectToAction("Index");
+                TempData["SuccessMessage"] = "Book added successfully.";
+                return RedirectToAction("List");
             }
 
             return View(model);
@@ -199,8 +200,6 @@ namespace BookShopTest.Controllers
             return View(viewModel);
         }
 
-        [HttpPost]
-        [HttpPost]
         [HttpPost]
         public async Task<IActionResult> Edit(EditBookViewModel model)
         {
@@ -249,6 +248,7 @@ namespace BookShopTest.Controllers
                 }
 
                 await dbContext.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Book updated successfully.";
             }
 
             return RedirectToAction("List");
