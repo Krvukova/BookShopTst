@@ -18,7 +18,7 @@ namespace BookShopTest.Controllers
             return RedirectToAction("Index", "Books");
         }
 
-        public IActionResult Privacy()
+        public IActionResult ContactUs()
         {
             return View();
         }
