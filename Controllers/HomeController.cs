@@ -23,6 +23,19 @@ namespace BookShopTest.Controllers
             return View();
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ContactUs(ContactUsModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                TempData["SuccessMessage"] = "Your message has been sent successfully.";
+                return RedirectToAction("ContactUs");
+            }
+
+            return View(model);
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

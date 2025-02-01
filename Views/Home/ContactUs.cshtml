@@ -1,6 +1,60 @@
-﻿@{
+﻿@model BookShopTest.Models.ContactUsModel
+
+@{
     ViewData["Title"] = "Contact Us";
 }
 
 <h1>Contact Us</h1>
 <p>Feel free to reach out to us with any questions or concerns.</p>
+
+<div class="agent-profile">
+    <img src="~/images/agent-photo.jpg" alt="Agent Photo" class="agent-photo" />
+    <p><strong>Agent Name:</strong> Ivan Ivic</p>
+    <p><strong>Phone:</strong> +385-9123-4567</p>
+    <p><strong>Email:</strong> ivanivic@mail.com</p>
+</div>
+
+<h2>Send a Message to Me</h2>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<form method="post">
+    <div class="form-group">
+        <label for="FullName">Full Name</label>
+        <input type="text" class="form-control" id="FullName" name="FullName" required />
+    </div>
+    <div class="form-group">
+        <label for="Email">Email</label>
+        <input type="email" class="form-control" id="Email" name="Email" required />
+    </div>
+    <div class="form-group">
+        <label for="PhoneNumber">Phone Number</label>
+        <input type="tel" class="form-control" id="PhoneNumber" name="PhoneNumber" required />
+    </div>
+    <div class="form-group">
+        <label for="Message">Message</label>
+        <textarea class="form-control" id="Message" name="Message" rows="4" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<style>
+    .agent-profile {
+        margin-bottom: 20px;
+    }
+
+    .agent-photo {
+        width: 150px;
+        height: auto;
+        border-radius: 50%;
+        margin-bottom: 10px;
+    }
+</style>
