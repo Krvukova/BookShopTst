@@ -4,6 +4,12 @@
     ViewData["Title"] = "Contact Us";
 }
 
+<h2>Our Location</h2>
+<div class="location-info">
+    <img src="~/images/map-photo.jpg" alt="Map Photo" class="map-photo" />
+    <p><strong>Address:</strong> Izmišljena adresa 44, Hrvatska</p>
+</div>
+
 <h1>Contact Us</h1>
 <p>Feel free to reach out to us with any questions or concerns.</p>
 
@@ -22,7 +28,7 @@
     </div>
 }
 
-<form method="post">
+<form method="post" class="mb-5"> <!-- Added margin-bottom class -->
     <div class="form-group">
         <label for="FullName">Full Name</label>
         <input type="text" class="form-control" id="FullName" name="FullName" required />
@@ -42,6 +48,7 @@
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
@@ -56,5 +63,20 @@
         height: auto;
         border-radius: 50%;
         margin-bottom: 10px;
+    }
+
+    .location-info {
+        margin-top: 20px;
+    }
+
+    .map-photo {
+        width: 400px;
+        height: auto;
+        max-width: 400px; /* Adjust the max-width as needed */
+        margin-bottom: 10px;
+    }
+
+    .mb-5 {
+        margin-bottom: 3rem; /* Adjust the value as needed */
     }
 </style>
