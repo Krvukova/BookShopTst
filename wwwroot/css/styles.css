@@ -15,11 +15,11 @@
 }
 
     .book-item img {
-        width: auto; /* Adjust width automatically */
-        height: 300px; /* Set a fixed height */
+        width: auto; 
+        height: 300px; 
         margin-bottom: 10px;
         border-radius: 5px;
-        object-fit: cover; /* Ensure the image covers the container without stretching */
+        object-fit: cover; 
     }
 
     .book-item h2 {

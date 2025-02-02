@@ -42,10 +42,10 @@
                 <td>@book.Genre</td>
                 <td>@book.Quantity</td>
                 <td>
-                    <!-- Action buttons (Edit, Delete) -->
+                    
                     <a href="@Url.Action("Edit", "Books", new { id = book.Id })" class="btn btn-primary btn-sm">Edit</a>
 
-                    <!-- Delete button -->
+                    
                     <form action="@Url.Action("Delete", "Books", new { id = book.Id })" method="post" class="d-inline">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>

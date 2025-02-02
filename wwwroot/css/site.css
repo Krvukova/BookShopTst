@@ -20,10 +20,10 @@ html {
 }
 :root {
     --primary-color: #f39c12;
-    --secondary-color: #FF5722; /* Orange */
-    --background-color: #F5F5F5; /* Light grey */
-    --text-color: #333; /* Dark grey */
-    --card-background: #FFFFFF; /* White */
+    --secondary-color: #FF5722; 
+    --background-color: #F5F5F5; 
+    --text-color: #333; 
+    --card-background: #FFFFFF; 
     --card-shadow: rgba(0, 0, 0, 0.1);
     --navbar-color: navy;
 }
@@ -35,8 +35,8 @@ body {
     padding-top: 100px;
 }
 .navbar {
-    background-color: #34495e !important; /* Ensure it overrides other styles */
-    font-size: 18px; /* Adjust the size as needed */
+    background-color: #34495e !important; 
+    font-size: 18px;
     font-family: 'Roboto', sans-serif;
 }
 
@@ -84,7 +84,7 @@ body {
 }
 .wide-photo {
     width: 100%;
-    margin-top: -18px; /* Adjust this value based on the height of your navbar */
+    margin-top: -18px; 
 }
 
     .wide-photo img {

@@ -17,13 +17,13 @@ namespace BookShopTest.Controllers
             _context = context;
         }
 
-        // GET: Orders/Create
+        
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Orders/Create
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("UserId,TotalAmount,OrderStatus")] Order order)
@@ -38,7 +38,7 @@ namespace BookShopTest.Controllers
             return View(order);
         }
 
-        // GET: Orders/Details/5
+        
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -68,7 +68,7 @@ namespace BookShopTest.Controllers
 
             return View(orders);
         }
-        // GET: Orders/AllOrders
+        
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AllOrders()
         {

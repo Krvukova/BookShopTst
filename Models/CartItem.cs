@@ -5,14 +5,14 @@ namespace BookShopTest.Models
 {
     public class CartItem
     {
-        public int Id { get; set; } // Primary Key
-        public int BookId { get; set; } // Foreign Key
+        public int Id { get; set; } 
+        public int BookId { get; set; } 
         public int Quantity { get; set; }
-        public decimal Price { get; set; } // Optional, can be derived from Book.Price
+        public decimal Price { get; set; } 
 
         [ForeignKey("BookId")]
-        public Book Book { get; set; } // Navigation property
+        public Book Book { get; set; } 
 
-        public string UserId { get; set; } // User association
+        public string UserId { get; set; } 
     }
 }

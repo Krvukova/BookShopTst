@@ -8,7 +8,7 @@
     @if (User.Identity.IsAuthenticated)
     {
         <li class="nav-item">
-            <!-- Link to the UserSettings page in HomeController -->
+            
             <a class="nav-link" asp-action="UserSettings" asp-controller="Home">
                 @User.Identity.Name
             </a>

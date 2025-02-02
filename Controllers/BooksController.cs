@@ -101,7 +101,7 @@ namespace BookShopTest.Controllers
                 return RedirectToAction("Details", new { id = bookId });
             }
 
-            // Check if the user exists in the database
+            
             var userExists = await dbContext.Users.AnyAsync(u => u.Id == user.Id);
             if (!userExists)
             {
@@ -114,7 +114,7 @@ namespace BookShopTest.Controllers
                 BookId = bookId,
                 UserId = user.Id,
                 Rating = rating,
-                Comment = comment ?? string.Empty, // Set Comment to empty string if null
+                Comment = comment ?? string.Empty, 
                 DatePosted = DateTime.Now
             };
 
@@ -221,7 +221,7 @@ namespace BookShopTest.Controllers
 
                 if (model.CoverImage != null)
                 {
-                    // Delete the old cover image if it exists
+                    
                     if (!string.IsNullOrEmpty(existingBook.CoverImageUrl))
                     {
                         var oldFilePath = Path.Combine(_env.WebRootPath, existingBook.CoverImageUrl.TrimStart('/'));
@@ -231,7 +231,7 @@ namespace BookShopTest.Controllers
                         }
                     }
 
-                    // Save the new cover image
+                    
                     var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.CoverImage.FileName);
                     var filePath = Path.Combine(_env.WebRootPath, "images", fileName);
                     using (var stream = new FileStream(filePath, FileMode.Create))
@@ -243,7 +243,7 @@ namespace BookShopTest.Controllers
                 }
                 else
                 {
-                    // Retain the old cover image
+                    
                     existingBook.CoverImageUrl = model.ExistingCoverImageUrl;
                 }
 
@@ -324,7 +324,7 @@ namespace BookShopTest.Controllers
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = "An error occurred while adding the book to the cart.";
-                // Log the exception (ex) for further analysis
+                
             }
 
             return Redirect(returnUrl);

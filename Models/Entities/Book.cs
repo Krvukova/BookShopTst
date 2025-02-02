@@ -15,6 +15,6 @@ namespace BookShopTest.Models.Entities
         public int Quantity { get; set; }
         public DateTime DateAdded { get; set; }
 
-        public virtual ICollection<Review> Reviews { get; set; } // Add this line
+        public virtual ICollection<Review> Reviews { get; set; } 
     }
 }

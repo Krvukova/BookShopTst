@@ -147,7 +147,7 @@ namespace BookShopTest.Controllers
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = "An error occurred while adding the book to the cart.";
-                // Log the exception (ex) for further analysis
+                
             }
 
             return Redirect(returnUrl ?? "/Books/Details/" + bookId);
@@ -161,22 +161,7 @@ namespace BookShopTest.Controllers
             var cartItems = dbContext.CartItems.Include(c => c.Book).Where(c => c.UserId == userId).ToList();
             var totalPrice = cartItems.Sum(c => c.Quantity * c.Book.Price);
 
-            var order = new Order
-            {
-                UserId = userId,
-                OrderDate = DateTime.Now,
-                TotalAmount = totalPrice,
-                OrderStatus = "Pending",
-                OrderItems = cartItems.Select(c => new OrderItem
-                {
-                    BookId = c.BookId,
-                    Quantity = c.Quantity,
-                    Price = c.Book.Price
-                }).ToList()
-            };
-
-            dbContext.Orders.Add(order);
-
+            
             foreach (var item in cartItems)
             {
                 var book = await dbContext.Books.FindAsync(item.BookId);
@@ -187,19 +172,10 @@ namespace BookShopTest.Controllers
                         TempData["ErrorMessage"] = $"Not enough stock for {book.Title}. Available: {book.Quantity}";
                         return RedirectToAction("Index");
                     }
-                    book.Quantity -= item.Quantity;
-                    dbContext.Books.Update(book);
                 }
             }
 
-            await dbContext.SaveChangesAsync();
-
-            // Clear the cart
-            dbContext.CartItems.RemoveRange(cartItems);
-            await dbContext.SaveChangesAsync();
-
             ViewBag.TotalPrice = totalPrice;
-
             return View("ShippingInfo");
         }
 
@@ -209,12 +185,39 @@ namespace BookShopTest.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Process the order and save shipping information
-                // You can add your order processing logic here
-
-                // Clear the cart
                 var userId = User.Identity.Name;
-                var cartItems = dbContext.CartItems.Where(c => c.UserId == userId).ToList();
+                var cartItems = dbContext.CartItems.Include(c => c.Book).Where(c => c.UserId == userId).ToList();
+                var totalPrice = cartItems.Sum(c => c.Quantity * c.Book.Price);
+
+                var order = new Order
+                {
+                    UserId = userId,
+                    OrderDate = DateTime.Now,
+                    TotalAmount = totalPrice,
+                    OrderStatus = "Pending",
+                    OrderItems = cartItems.Select(c => new OrderItem
+                    {
+                        BookId = c.BookId,
+                        Quantity = c.Quantity,
+                        Price = c.Book.Price
+                    }).ToList()
+                };
+
+                dbContext.Orders.Add(order);
+
+                foreach (var item in cartItems)
+                {
+                    var book = await dbContext.Books.FindAsync(item.BookId);
+                    if (book != null)
+                    {
+                        book.Quantity -= item.Quantity;
+                        dbContext.Books.Update(book);
+                    }
+                }
+
+                await dbContext.SaveChangesAsync();
+
+                
                 dbContext.CartItems.RemoveRange(cartItems);
                 await dbContext.SaveChangesAsync();
 
